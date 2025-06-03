@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* White */
+    --foreground: 222.2 84% 4.9%; /* Dark Gray */
+
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 222.2 84% 4.9%; /* Dark Gray */
+
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 222.2 84% 4.9%; /* Dark Gray */
+
+    --primary: 210 90% 50%; /* Custom Blue */
+    --primary-foreground: 210 40% 98%; /* Light Blue */
+
+    --secondary: 210 40% 96.1%; /* Light Gray */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* Darker Gray */
+
+    --muted: 210 40% 96.1%; /* Light Gray */
+    --muted-foreground: 215.4 16.3% 46.9%; /* Medium Gray */
+
+    --accent: 210 40% 96.1%; /* Light Gray */
+    --accent-foreground: 222.2 47.4% 11.2%; /* Darker Gray */
+
+    --destructive: 0 84.2% 60.2%; /* Red */
+    --destructive-foreground: 210 40% 98%; /* Light Blue */
+
+    --border: 214.3 31.8% 91.4%; /* Light Border */
+    --input: 214.3 31.8% 91.4%; /* Light Input Border */
+    --ring: 222.2 84% 4.9%; /* Dark Ring */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%; /* Dark Gray */
+    --foreground: 210 40% 98%; /* Light Blue */
+
+    --card: 222.2 84% 4.9%; /* Dark Gray */
+    --card-foreground: 210 40% 98%; /* Light Blue */
+
+    --popover: 222.2 84% 4.9%; /* Dark Gray */
+    --popover-foreground: 210 40% 98%; /* Light Blue */
+
+    --primary: 210 90% 60%; /* Brighter Blue for Dark Mode */
+    --primary-foreground: 222.2 47.4% 11.2%; /* Darker Gray */
+
+    --secondary: 217.2 32.6% 17.5%; /* Darker Gray */
+    --secondary-foreground: 210 40% 98%; /* Light Blue */
+
+    --muted: 217.2 32.6% 17.5%; /* Darker Gray */
+    --muted-foreground: 215 20.2% 65.1%; /* Lighter Gray */
+
+    --accent: 217.2 32.6% 17.5%; /* Darker Gray */
+    --accent-foreground: 210 40% 98%; /* Light Blue */
+
+    --destructive: 0 62.8% 30.6%; /* Dark Red */
+    --destructive-foreground: 210 40% 98%; /* Light Blue */
+
+    --border: 217.2 32.6% 17.5%; /* Dark Border */
+    --input: 217.2 32.6% 17.5%; /* Dark Input Border */
+    --ring: 212.7 26.8% 83.9%; /* Light Ring */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Weather Animation Enhancements */
+.weather-animation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Ensure content stays above animations */
+.content-overlay {
+  position: relative;
+  z-index: 10;
+}
+
+/* Smooth backdrop blur transitions */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Dark mode adjustments for animations */
+.dark .raindrop {
+  background: linear-gradient(to bottom, rgba(135, 206, 235, 0.4), rgba(135, 206, 235, 0.2));
+}
+
+.dark .fog-layer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(100, 100, 100, 0.1) 25%,
+    rgba(100, 100, 100, 0.2) 50%,
+    rgba(100, 100, 100, 0.1) 75%,
+    transparent 100%
+  );
+}
+
+.dark .wind-line {
+  background: linear-gradient(to right, transparent, rgba(200, 200, 200, 0.3), transparent);
+}
