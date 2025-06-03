@@ -60,7 +60,9 @@ export default function HomePage() {
     >
       <WeatherAnimations weather={weatherData} />
       <div className="flex flex-col items-center gap-8 p-4 md:p-8 w-full max-w-6xl relative z-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-4 text-foreground animate-fade-in">WeatherWear</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-4 text-foreground animate-fade-in">
+          outfitweather
+        </h1>
         <SearchBar onSearch={fetchWeather} isLoading={isLoading} />
 
         {isLoading && <WeatherSkeleton />}

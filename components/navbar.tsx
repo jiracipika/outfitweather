@@ -10,8 +10,8 @@ export default function Navbar() {
     <header className="flex items-center justify-between h-16 px-4 border-b bg-background text-foreground shadow-sm md:px-6">
       <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-primary">
         <Sun className="w-6 h-6 text-yellow-500" />
-        <span className="sr-only">WeatherWear</span>
-        <span className="hidden md:inline">WeatherWear</span>
+        <span className="sr-only">outfitweather</span>
+        <span className="hidden md:inline">outfitweather</span>
       </Link>
       <nav className="flex items-center gap-4 sm:gap-6">
         <Button variant="ghost" asChild className="text-foreground hover:bg-accent hover:text-accent-foreground">
