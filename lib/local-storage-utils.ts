@@ -3,41 +3,88 @@ import type { OutfitRecommendation, CustomOutfitRule } from "./types"
 const FAVORITES_KEY = "weatherWearFavorites"
 const CUSTOM_RULES_KEY = "weatherWearCustomRules"
 
-export function getSavedOutfits(): OutfitRecommendation[] {
-  if (typeof window === "undefined") return [] // Ensure running in browser
-  const stored = localStorage.getItem(FAVORITES_KEY)
-  return stored ? JSON.parse(stored) : []
-}
+function readArray(key: string): unknown[] {
+  if (typeof window === "undefined") return []
 
-export function saveOutfitToLocalStorage(outfit: OutfitRecommendation): void {
-  if (typeof window === "undefined") return
-  const favorites = getSavedOutfits()
-  // Prevent duplicates based on a simple check (e.g., description and temperature)
-  const exists = favorites.some(
-    (fav) =>
-      fav.description === outfit.description &&
-      fav.temperature === outfit.temperature &&
-      fav.location === outfit.location,
-  )
-  if (!exists) {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favorites, outfit]))
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(key) ?? "[]")
+    return Array.isArray(value) ? value : []
+  } catch {
+    // Corrupt or inaccessible browser storage should not break the page.
+    return []
   }
 }
 
-export function removeOutfitFromLocalStorage(id: string): void {
-  if (typeof window === "undefined") return
+function isOutfit(value: unknown): value is OutfitRecommendation {
+  if (!value || typeof value !== "object") return false
+  const outfit = value as Record<string, unknown>
+  return (
+    typeof outfit.id === "string" &&
+    typeof outfit.emoji === "string" &&
+    typeof outfit.description === "string" &&
+    typeof outfit.conditionSummary === "string" &&
+    typeof outfit.temperature === "number" &&
+    Number.isFinite(outfit.temperature) &&
+    typeof outfit.location === "string"
+  )
+}
+
+function isRule(value: unknown): value is CustomOutfitRule {
+  if (!value || typeof value !== "object") return false
+  const rule = value as Record<string, unknown>
+  const optionalNumber = (field: unknown) => field === undefined || (typeof field === "number" && Number.isFinite(field))
+  const optionalBoolean = (field: unknown) => field === undefined || typeof field === "boolean"
+
+  return (
+    typeof rule.id === "string" &&
+    typeof rule.name === "string" &&
+    typeof rule.emoji === "string" &&
+    typeof rule.description === "string" &&
+    optionalNumber(rule.minTemp) &&
+    optionalNumber(rule.maxTemp) &&
+    optionalBoolean(rule.isRaining) &&
+    optionalBoolean(rule.isSnowing) &&
+    optionalBoolean(rule.isWindy)
+  )
+}
+
+function writeArray(key: string, value: unknown[]): boolean {
+  if (typeof window === "undefined") return false
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+    return true
+  } catch {
+    return false
+  }
+}
+
+export function getSavedOutfits(): OutfitRecommendation[] {
+  return readArray(FAVORITES_KEY).filter(isOutfit)
+}
+
+export function saveOutfitToLocalStorage(outfit: OutfitRecommendation): boolean {
   const favorites = getSavedOutfits()
-  const updatedFavorites = favorites.filter((outfit) => outfit.id !== id)
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites))
+  const exists = favorites.some(
+    (favorite) =>
+      favorite.description === outfit.description &&
+      favorite.temperature === outfit.temperature &&
+      favorite.location === outfit.location,
+  )
+  return exists || writeArray(FAVORITES_KEY, [...favorites, outfit])
+}
+
+export function removeOutfitFromLocalStorage(id: string): boolean {
+  const favorites = getSavedOutfits()
+  return writeArray(
+    FAVORITES_KEY,
+    favorites.filter((outfit) => outfit.id !== id),
+  )
 }
 
 export function getCustomOutfitRules(): CustomOutfitRule[] {
-  if (typeof window === "undefined") return []
-  const stored = localStorage.getItem(CUSTOM_RULES_KEY)
-  return stored ? JSON.parse(stored) : []
+  return readArray(CUSTOM_RULES_KEY).filter(isRule)
 }
 
-export function saveCustomOutfitRules(rules: CustomOutfitRule[]): void {
-  if (typeof window === "undefined") return
-  localStorage.setItem(CUSTOM_RULES_KEY, JSON.stringify(rules))
+export function saveCustomOutfitRules(rules: CustomOutfitRule[]): boolean {
+  return writeArray(CUSTOM_RULES_KEY, rules)
 }

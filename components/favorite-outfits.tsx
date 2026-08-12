@@ -14,8 +14,9 @@ export default function FavoriteOutfits() {
   }, [])
 
   const handleRemoveOutfit = (id: string) => {
-    removeOutfitFromLocalStorage(id)
-    setFavorites(getSavedOutfits()) // Refresh the list
+    if (removeOutfitFromLocalStorage(id)) {
+      setFavorites((current) => current.filter((outfit) => outfit.id !== id))
+    }
   }
 
   if (favorites.length === 0) {

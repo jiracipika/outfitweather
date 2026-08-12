@@ -32,7 +32,7 @@ export default function CustomizeLogic() {
     ])
   }
 
-  const updateRule = (id: string, field: keyof CustomOutfitRule, value: any) => {
+  const updateRule = <K extends keyof CustomOutfitRule>(id: string, field: K, value: CustomOutfitRule[K]) => {
     setRules(rules.map((rule) => (rule.id === id ? { ...rule, [field]: value } : rule)))
   }
 
@@ -41,10 +41,13 @@ export default function CustomizeLogic() {
   }
 
   const handleSave = () => {
-    saveCustomOutfitRules(rules)
+    const saved = saveCustomOutfitRules(rules)
     toast({
-      title: "Custom rules saved!",
-      description: "Your outfit recommendations will now use your custom logic.",
+      title: saved ? "Custom rules saved!" : "Could not save custom rules",
+      description: saved
+        ? "Your outfit recommendations will now use your custom logic."
+        : "Check your browser's storage settings and try again.",
+      variant: saved ? "default" : "destructive",
     })
   }
 
@@ -115,7 +118,7 @@ export default function CustomizeLogic() {
               <Checkbox
                 id={`rule-raining-${rule.id}`}
                 checked={rule.isRaining ?? false}
-                onCheckedChange={(checked) => updateRule(rule.id, "isRaining", checked)}
+                onCheckedChange={(checked) => updateRule(rule.id, "isRaining", checked === true)}
               />
               <Label htmlFor={`rule-raining-${rule.id}`}>Is Raining?</Label>
             </div>
@@ -123,7 +126,7 @@ export default function CustomizeLogic() {
               <Checkbox
                 id={`rule-snowing-${rule.id}`}
                 checked={rule.isSnowing ?? false}
-                onCheckedChange={(checked) => updateRule(rule.id, "isSnowing", checked)}
+                onCheckedChange={(checked) => updateRule(rule.id, "isSnowing", checked === true)}
               />
               <Label htmlFor={`rule-snowing-${rule.id}`}>Is Snowing?</Label>
             </div>
@@ -131,7 +134,7 @@ export default function CustomizeLogic() {
               <Checkbox
                 id={`rule-windy-${rule.id}`}
                 checked={rule.isWindy ?? false}
-                onCheckedChange={(checked) => updateRule(rule.id, "isWindy", checked)}
+                onCheckedChange={(checked) => updateRule(rule.id, "isWindy", checked === true)}
               />
               <Label htmlFor={`rule-windy-${rule.id}`}>Is Windy? (wind &gt; 20 kph)</Label>
             </div>
