@@ -5,6 +5,7 @@ import "./globals.css"
 import Navbar from "@/components/navbar"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import AppTransitionShell from '@/components/app-transition-shell';
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,7 +26,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">{children}</main>
+            <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6"><AppTransitionShell>{children}</AppTransitionShell></main>
           </div>
           <Toaster />
         </ThemeProvider>
