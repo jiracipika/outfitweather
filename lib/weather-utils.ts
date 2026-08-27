@@ -47,8 +47,13 @@ export function getOutfitRecommendation(
   customRules: CustomOutfitRule[] = [],
 ): OutfitRecommendation {
   const temp = weather.current.temp_c
-  const isRaining = weather.current.precip_mm > 0 && weather.current.condition.text.toLowerCase().includes("rain")
-  const isSnowing = weather.current.precip_mm > 0 && weather.current.condition.text.toLowerCase().includes("snow")
+  const conditionText = weather.current.condition.text.toLowerCase()
+  // Drizzle IS rain: WeatherAPI texts like "Light drizzle" contain no "rain",
+  // which previously meant no umbrella advice during drizzle. Match both.
+  const isRaining =
+    weather.current.precip_mm > 0 &&
+    (conditionText.includes("rain") || conditionText.includes("drizzle"))
+  const isSnowing = weather.current.precip_mm > 0 && conditionText.includes("snow")
   const isWindy = weather.current.wind_kph > 20 // Define "windy" as > 20 kph
 
   const baseRecommendation =
@@ -131,6 +136,10 @@ export function getWeatherBackgroundColor(weather: WeatherData | null): string {
   // Fog/Mist
   if ([1030, 1135, 1147].includes(conditionCode)) {
     return "bg-weather-fog-light dark:bg-weather-fog-dark"
+  }
+  // Thunderstorms — previously fell through to the default theme background
+  if ([1087, 1273, 1276, 1279, 1282].includes(conditionCode)) {
+    return "bg-weather-rain-light dark:bg-weather-rain-dark"
   }
 
   // Default if no specific match, or for extreme temps

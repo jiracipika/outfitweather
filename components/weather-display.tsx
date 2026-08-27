@@ -14,12 +14,14 @@ interface WeatherDisplayProps {
 }
 
 export default function WeatherDisplay({ weather, outfit }: WeatherDisplayProps) {
-  const [saved, setSaved] = useState(false)
+  const [saveState, setSaveState] = useState<"idle" | "saved" | "duplicate">("idle")
 
   const handleSaveOutfit = (outfitToSave: OutfitRecommendation) => {
-    saveOutfitToLocalStorage(outfitToSave)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000) // Reset saved state after 2 seconds
+    // saveOutfitToLocalStorage returns false when this outfit is already in
+    // the favorites list — previously the UI still claimed "Outfit Saved!".
+    const wasStored = saveOutfitToLocalStorage(outfitToSave)
+    setSaveState(wasStored ? "saved" : "duplicate")
+    setTimeout(() => setSaveState("idle"), 2400)
   }
 
   return (
@@ -63,9 +65,22 @@ export default function WeatherDisplay({ weather, outfit }: WeatherDisplayProps)
           Your WeatherWear Recommendation:
         </h2>
         <OutfitCard outfit={outfit} onSave={handleSaveOutfit} />
-        {saved && (
-          <div className="mt-4 flex items-center text-green-600 font-medium">
-            <CheckCircle className="w-5 h-5 mr-2" /> Outfit Saved!
+        {saveState !== "idle" && (
+          <div
+            role="status"
+            className={
+              saveState === "saved"
+                ? "mt-4 flex items-center text-green-600 font-medium"
+                : "mt-4 flex items-center text-muted-foreground font-medium"
+            }
+          >
+            {saveState === "saved" ? (
+              <>
+                <CheckCircle className="w-5 h-5 mr-2" /> Outfit Saved!
+              </>
+            ) : (
+              <>Already in your favorites — see the Favorites page.</>
+            )}
           </div>
         )}
       </div>
