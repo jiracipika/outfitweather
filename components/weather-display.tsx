@@ -1,19 +1,20 @@
 "use client"
 
 import Image from "next/image"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
 import type { WeatherData, OutfitRecommendation } from "@/lib/types"
 import OutfitCard from "./outfit-card"
 import { saveOutfitToLocalStorage } from "@/lib/local-storage-utils"
-import { useState } from "react"
-import { CheckCircle } from "lucide-react"
+import { CheckCircle, FlaskConical } from "lucide-react"
 
 interface WeatherDisplayProps {
   weather: WeatherData
   outfit: OutfitRecommendation
+  /** Demo-mode data (no real API call) — surfaced honestly in the UI. */
+  demo?: boolean
 }
 
-export default function WeatherDisplay({ weather, outfit }: WeatherDisplayProps) {
+export default function WeatherDisplay({ weather, outfit, demo = false }: WeatherDisplayProps) {
   const [saveState, setSaveState] = useState<"idle" | "saved" | "duplicate">("idle")
 
   const handleSaveOutfit = (outfitToSave: OutfitRecommendation) => {
@@ -25,11 +26,20 @@ export default function WeatherDisplay({ weather, outfit }: WeatherDisplayProps)
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 w-full max-w-4xl">
-      <Card className="md:col-span-1 lg:col-span-1 backdrop-blur-sm bg-card/80">
+    <div className="grid w-full max-w-4xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {demo && (
+        <div className="md:col-span-2 lg:col-span-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-black/30 px-4 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
+            <FlaskConical className="h-3.5 w-3.5" />
+            Demo scene — sample data, not a live forecast
+          </div>
+        </div>
+      )}
+
+      <Card className="ow-glass md:col-span-1 lg:col-span-1">
         <CardHeader>
           <CardTitle className="text-3xl">{weather.location.name}</CardTitle>
-          <CardDescription>
+          <CardDescription className="ow-glass-soft">
             {weather.location.region}, {weather.location.country}
           </CardDescription>
         </CardHeader>
@@ -39,11 +49,11 @@ export default function WeatherDisplay({ weather, outfit }: WeatherDisplayProps)
             alt={weather.current.condition.text}
             width={80}
             height={80}
-            className="w-20 h-20"
+            className="h-20 w-20"
           />
-          <div className="text-5xl font-bold">{weather.current.temp_c}°C</div>
+          <div className="ow-display text-5xl font-bold">{weather.current.temp_c}°C</div>
           <p className="text-lg text-muted-foreground">{weather.current.condition.text}</p>
-          <div className="grid grid-cols-2 gap-2 text-sm w-full">
+          <div className="grid w-full grid-cols-2 gap-2 text-sm">
             <div className="flex items-center justify-between">
               <span>Humidity:</span>
               <span className="font-medium">{weather.current.humidity}%</span>
@@ -60,23 +70,21 @@ export default function WeatherDisplay({ weather, outfit }: WeatherDisplayProps)
         </CardContent>
       </Card>
 
-      <div className="md:col-span-1 lg:col-span-2 flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-semibold mb-4 backdrop-blur-sm bg-background/80 px-4 py-2 rounded-lg">
-          Your WeatherWear Recommendation:
-        </h2>
+      <div className="flex flex-col items-center justify-center md:col-span-1 lg:col-span-2">
+        <h2 className="ow-glass mb-4 rounded-lg px-4 py-2 text-2xl font-semibold">Your WeatherWear Recommendation:</h2>
         <OutfitCard outfit={outfit} onSave={handleSaveOutfit} />
         {saveState !== "idle" && (
           <div
             role="status"
             className={
               saveState === "saved"
-                ? "mt-4 flex items-center text-green-600 font-medium"
-                : "mt-4 flex items-center text-muted-foreground font-medium"
+                ? "mt-4 flex items-center font-medium text-emerald-300 drop-shadow"
+                : "mt-4 flex items-center font-medium text-white/70 drop-shadow"
             }
           >
             {saveState === "saved" ? (
               <>
-                <CheckCircle className="w-5 h-5 mr-2" /> Outfit Saved!
+                <CheckCircle className="mr-2 h-5 w-5" /> Outfit Saved!
               </>
             ) : (
               <>Already in your favorites — see the Favorites page.</>
@@ -86,4 +94,24 @@ export default function WeatherDisplay({ weather, outfit }: WeatherDisplayProps)
       </div>
     </div>
   )
+}
+
+function Card({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return <div className={`rounded-3xl ${className}`}>{children}</div>
+}
+
+function CardHeader({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col space-y-1.5 p-6">{children}</div>
+}
+
+function CardTitle({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return <h3 className={`font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
+}
+
+function CardDescription({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return <p className={`text-sm ${className}`}>{children}</p>
+}
+
+function CardContent({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return <div className={`p-6 pt-0 ${className}`}>{children}</div>
 }

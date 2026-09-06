@@ -1,18 +1,19 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from 'next/font/google'
+import { Inter, Fraunces } from "next/font/google"
 import "./globals.css"
 import Navbar from "@/components/navbar"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import AppTransitionShell from '@/components/app-transition-shell';
+import AppTransitionShell from "@/components/app-transition-shell"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
+const display = Fraunces({ subsets: ["latin"], variable: "--font-display" })
 
 export const metadata: Metadata = {
   title: "outfitweather",
-  description: "Decide what to wear based on the current weather in your location with outfitweather.",
-    generator: 'v0.dev'
+  description:
+    "Decide what to wear based on the current weather in your location — with full-screen animated skies and a few sheep.",
 }
 
 export default function RootLayout({
@@ -21,12 +22,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${display.variable}`}>
+      <body style={{ fontFamily: "var(--font-body), system-ui, sans-serif" }}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex min-h-screen flex-col">
             <Navbar />
-            <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6"><AppTransitionShell>{children}</AppTransitionShell></main>
+            <main className="flex flex-1 flex-col items-center justify-center p-0 md:p-0">
+              <AppTransitionShell>{children}</AppTransitionShell>
+            </main>
           </div>
           <Toaster />
         </ThemeProvider>

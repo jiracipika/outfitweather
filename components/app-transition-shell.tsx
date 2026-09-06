@@ -42,7 +42,7 @@ export default function AppTransitionShell({ children }: { children: React.React
     ? direction > 0 ? 'outfitweather-enter-right' : 'outfitweather-enter-left' : '';
 
   return (
-    <div key={pathname} className={enterClass} style={transitionStyle}>
+    <div key={pathname} className={`w-full ${enterClass}`} style={transitionStyle}>
       {children}
     </div>
   );
