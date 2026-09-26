@@ -25,6 +25,7 @@ export default function HomePage() {
   const initialScene = initialDemo && DEMO_SCENE_KEYS.includes(initialDemo as SceneKey) ? initialDemo as SceneKey : null
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
   const [lastCity, setLastCity] = useState<string | null>(null)
+  const [currentQuery, setCurrentQuery] = useState<string | null>(null)
   const [customRules, setCustomRules] = useState<CustomOutfitRule[]>([])
   const [preview, setPreview] = useState<SceneKey | null>(initialScene)
   const [loading, setLoading] = useState(false)
@@ -78,6 +79,7 @@ export default function HomePage() {
       if (controller.signal.aborted) return
       setWeatherData(data as WeatherData)
       setPreview(null)
+      setCurrentQuery(query)
       if (!query.includes(",") || /[a-z]/i.test(query)) {
         try { window.localStorage.setItem("ow:last-city", data.location.name) } catch { /* private browsing */ }
         setLastCity(data.location.name)
@@ -138,8 +140,8 @@ export default function HomePage() {
           </div>
 
           <div className="ow-feature relative">
-            {loading ? <WeatherSkeleton /> : sceneWeather && recommendation ? (
-              <WeatherDisplay key={`${preview ?? "live"}-${sceneWeather.location.name}-${scene.key}`} weather={sceneWeather} outfit={recommendation} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} />
+            {loading && !sceneWeather ? <WeatherSkeleton /> : sceneWeather && recommendation ? (
+              <WeatherDisplay key={`${preview ?? "live"}-${sceneWeather.location.name}-${scene.key}`} weather={sceneWeather} outfit={recommendation} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} isRefreshing={loading} onRefresh={currentQuery ? () => void fetchWeather(currentQuery) : undefined} />
             ) : (
               <div className="ow-empty-card">
                 <div className="ow-empty-icon"><Compass size={34} strokeWidth={1.5} /></div>

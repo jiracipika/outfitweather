@@ -204,6 +204,13 @@ export default function WeatherScenery({ scene, motion = true, parallax, sheepCo
 
       {/* Aurora shimmer on clear nights */}
       {scene === "clear-night" && !reducedMotion && <Aurora />}
+      <div key={scene} className="ow-scene-wash" />
+
+      {/* Weather-specific atmosphere beyond the particle layer. */}
+      {(scene === "clear-day" || scene === "heat") && <SunRays reduced={reducedMotion} />}
+      {(scene === "rain" || scene === "thunder") && <RainHaze reduced={reducedMotion} />}
+      {scene === "snow" && <SnowHaze reduced={reducedMotion} />}
+      {scene === "wind" && <WindStreaks reduced={reducedMotion} />}
 
       {/* Sun / moon */}
       {(scene === "clear-day" || scene === "heat") && (
@@ -336,6 +343,22 @@ function Aurora() {
       }}
     />
   )
+}
+
+function SunRays({ reduced }: { reduced: boolean }) {
+  return <div className={`ow-sunrays ${reduced ? "is-static" : ""}`} aria-hidden="true"><div /><div /><div /></div>
+}
+
+function RainHaze({ reduced }: { reduced: boolean }) {
+  return <div className={`ow-rain-haze ${reduced ? "is-static" : ""}`} aria-hidden="true"><i /><i /><i /><i /></div>
+}
+
+function SnowHaze({ reduced }: { reduced: boolean }) {
+  return <div className={`ow-snow-haze ${reduced ? "is-static" : ""}`} aria-hidden="true" />
+}
+
+function WindStreaks({ reduced }: { reduced: boolean }) {
+  return <div className={`ow-wind-streaks ${reduced ? "is-static" : ""}`} aria-hidden="true"><i /><i /><i /><i /><i /></div>
 }
 
 /* --------------------------------- clouds -------------------------------- */
