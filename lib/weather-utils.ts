@@ -6,38 +6,38 @@ const defaultOutfitRules = [
     minTemp: Number.NEGATIVE_INFINITY,
     maxTemp: 0,
     emoji: "🥶",
-    description: "Bundle up! It's freezing cold.",
+    description: "Wear an insulated coat, thermal layers, gloves and a warm hat.",
     conditionSummary: "Freezing",
   },
   {
     minTemp: 0,
     maxTemp: 5,
     emoji: "🧥",
-    description: "Wear a heavy coat, hat, and gloves.",
+    description: "Reach for a heavy coat, warm layers, hat and gloves.",
     conditionSummary: "Very Cold",
   },
-  { minTemp: 5, maxTemp: 10, emoji: "🧣", description: "A warm jacket and scarf will do.", conditionSummary: "Cold" },
-  { minTemp: 10, maxTemp: 15, emoji: "🍂", description: "Light jacket or sweater needed.", conditionSummary: "Cool" },
+  { minTemp: 5, maxTemp: 10, emoji: "🧣", description: "A warm jacket and scarf will help on the way out.", conditionSummary: "Cold" },
+  { minTemp: 10, maxTemp: 15, emoji: "🍂", description: "A light jacket over a comfortable layer should do.", conditionSummary: "Cool" },
   {
     minTemp: 15,
     maxTemp: 20,
     emoji: "👕",
-    description: "Long-sleeve shirt or light sweater.",
+    description: "Try a long-sleeve shirt or a light sweater.",
     conditionSummary: "Mild",
   },
-  { minTemp: 20, maxTemp: 25, emoji: "🌞", description: "Light tee and jeans/shorts.", conditionSummary: "Warm" },
+  { minTemp: 20, maxTemp: 25, emoji: "🌞", description: "A light tee with jeans or shorts will be comfortable.", conditionSummary: "Warm" },
   {
     minTemp: 25,
     maxTemp: 30,
     emoji: "☀️",
-    description: "Shorts and a t-shirt. Stay hydrated!",
+    description: "Choose breathable clothes, sunglasses and sunscreen. Bring water.",
     conditionSummary: "Hot",
   },
   {
     minTemp: 30,
     maxTemp: Number.POSITIVE_INFINITY,
     emoji: "🥵",
-    description: "Minimal clothing, seek shade!",
+    description: "Go with loose breathable clothes, sunscreen and plenty of water. Find shade when you can.",
     conditionSummary: "Very Hot",
   },
 ]
@@ -50,10 +50,8 @@ export function getOutfitRecommendation(
   const conditionText = weather.current.condition.text.toLowerCase()
   // Drizzle IS rain: WeatherAPI texts like "Light drizzle" contain no "rain",
   // which previously meant no umbrella advice during drizzle. Match both.
-  const isRaining =
-    weather.current.precip_mm > 0 &&
-    (conditionText.includes("rain") || conditionText.includes("drizzle"))
-  const isSnowing = weather.current.precip_mm > 0 && conditionText.includes("snow")
+  const isRaining = conditionText.includes("rain") || conditionText.includes("drizzle") || conditionText.includes("shower")
+  const isSnowing = conditionText.includes("snow") || conditionText.includes("sleet") || conditionText.includes("blizzard")
   const isWindy = weather.current.wind_kph > 20 // Define "windy" as > 20 kph
 
   const baseRecommendation =
@@ -82,17 +80,17 @@ export function getOutfitRecommendation(
     // Apply default weather conditions if no custom rule overrides
     if (isRaining) {
       emoji = "☔"
-      description = `${description} Don't forget your umbrella!`
+      description = `${description} Bring an umbrella or a waterproof layer.`
       conditionSummary = "Rainy"
     } else if (isSnowing) {
       emoji = "🌨️"
-      description = `${description} Expect snow!`
+      description = `${description} Wear shoes with grip for the snow.`
       conditionSummary = "Snowy"
     }
 
     if (isWindy) {
       emoji = `${emoji}💨` // Add wind emoji
-      description = `${description} It's quite windy!`
+      description = `${description} Add a windproof outer layer.`
       conditionSummary = `${conditionSummary} and Windy`
     }
   }

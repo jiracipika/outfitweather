@@ -5,6 +5,7 @@ import type { SceneKey } from "@/lib/weather-scene"
 
 interface WeatherSceneryProps {
   scene: SceneKey
+  motion?: boolean
   /** Pointer position, -1..1 on both axes, for the multi-axis parallax. */
   parallax: { x: number; y: number }
   /** Number of sheep in the quirk herd. */
@@ -18,29 +19,35 @@ interface WeatherSceneryProps {
  * celestial bodies → clouds/fog → canvas particles → lightning → sheep.
  * Canvas particles + aurora pause automatically when the tab is hidden.
  */
-export default function WeatherScenery({ scene, parallax, sheepCount, onSheepClick }: WeatherSceneryProps) {
+export default function WeatherScenery({ scene, motion = true, parallax, sheepCount, onSheepClick }: WeatherSceneryProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const parallaxRef = useRef(parallax)
+  parallaxRef.current = parallax
   const [flash, setFlash] = useState(false)
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useReducedMotion() || !motion
 
   // Lightning scheduler for the thunder scene.
   useEffect(() => {
     if (scene !== "thunder" || reducedMotion) return
-    let timer: ReturnType<typeof setTimeout>
+    const timers = new Set<ReturnType<typeof setTimeout>>()
+    const later = (fn: () => void, delay: number) => {
+      const timer = setTimeout(() => { timers.delete(timer); fn() }, delay)
+      timers.add(timer)
+    }
     const schedule = () => {
-      timer = setTimeout(() => {
+      later(() => {
         setFlash(true)
-        setTimeout(() => setFlash(false), 140)
+        later(() => setFlash(false), 140)
         // Occasional double-strike.
-        setTimeout(() => {
+        later(() => {
           setFlash(true)
-          setTimeout(() => setFlash(false), 110)
+          later(() => setFlash(false), 110)
         }, 320)
         schedule()
       }, 2600 + Math.random() * 5200)
     }
     schedule()
-    return () => clearTimeout(timer)
+    return () => { timers.forEach(clearTimeout); setFlash(false) }
   }, [scene, reducedMotion])
 
   // Canvas particle system.
@@ -108,18 +115,10 @@ export default function WeatherScenery({ scene, parallax, sheepCount, onSheepCli
     }
     particles = spawn()
 
-    const px = parallax.x
-    const py = parallax.y
-    let lastP = { x: px, y: py }
-
     const tick = () => {
       if (!running) return
-      // Track the latest parallax without re-creating the effect.
-      lastP = parallaxRef.current
+      const lastP = parallaxRef.current
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      const shiftX = reducedMotion ? 0 : lastP.x * 14
-      const shiftY = reducedMotion ? 0 : lastP.y * 8
 
       for (const p of particles) {
         if (p.kind === "rain") {
@@ -164,13 +163,8 @@ export default function WeatherScenery({ scene, parallax, sheepCount, onSheepCli
         }
       }
 
-      void shiftX
-      void shiftY
-      raf = requestAnimationFrame(tick)
+      if (!reducedMotion) raf = requestAnimationFrame(tick)
     }
-
-    const parallaxRef = { current: parallax }
-    parallaxRef.current = parallax
 
     if (!reducedMotion || scene === "rain" || scene === "snow") {
       // Even with reduced motion, a very slow ambient drift is rendered
@@ -178,7 +172,6 @@ export default function WeatherScenery({ scene, parallax, sheepCount, onSheepCli
       // behaviour: draw a single static frame.
       if (reducedMotion) {
         tick()
-        running = false
       } else {
         raf = requestAnimationFrame(tick)
       }
@@ -188,7 +181,7 @@ export default function WeatherScenery({ scene, parallax, sheepCount, onSheepCli
       if (document.hidden) {
         running = false
         cancelAnimationFrame(raf)
-      } else if (!reducedMotion) {
+      } else if (!reducedMotion && !running) {
         running = true
         raf = requestAnimationFrame(tick)
       }
@@ -269,11 +262,9 @@ export default function WeatherScenery({ scene, parallax, sheepCount, onSheepCli
       )}
 
       {/* The sheep — front layer, clickable, pointer-events on this subtree only */}
-      {!reducedMotion && (
-        <div className="absolute inset-x-0 bottom-0">
-          <SheepHerd count={sheepCount} parallax={parallax} onSheepClick={onSheepClick} />
-        </div>
-      )}
+      <div className="absolute inset-x-0 bottom-0">
+          <SheepHerd count={sheepCount} parallax={parallax} reduced={reducedMotion} onSheepClick={onSheepClick} />
+      </div>
     </div>
   )
 }
@@ -301,12 +292,12 @@ function Stars({ parallax, reduced }: { parallax: { x: number; y: number }; redu
     () =>
       range(90).map((i) => ({
         id: i,
-        top: Math.random() * 62,
-        left: Math.random() * 100,
-        size: 1 + Math.random() * 2.1,
-        depth: 0.4 + Math.random(),
-        tw: 2.4 + Math.random() * 3.6,
-        delay: Math.random() * 4,
+        top: (i * 73.7) % 62,
+        left: (i * 37.31) % 100,
+        size: 1 + (i * 0.71) % 2.1,
+        depth: 0.4 + (i * 0.29) % 1,
+        tw: 2.4 + (i * 0.53) % 3.6,
+        delay: (i * 0.37) % 4,
       })),
     []
   )
@@ -441,22 +432,24 @@ function FogBanks({ parallax, reduced }: { parallax: { x: number; y: number }; r
 function SheepHerd({
   count,
   parallax,
+  reduced,
   onSheepClick,
 }: {
   count: number
   parallax: { x: number; y: number }
+  reduced: boolean
   onSheepClick?: () => void
 }) {
   const sheep = useMemo(
     () =>
       range(Math.max(count, 1)).map((i) => ({
         id: i,
-        left: 4 + ((i * 97) % 88) + Math.random() * 4,
-        size: 30 + Math.random() * 22,
-        dur: 46 + Math.random() * 40,
-        delay: -Math.random() * 60,
-        depth: 0.5 + Math.random() * 0.7,
-        flip: Math.random() > 0.5,
+        left: 6 + ((i * 29) % 84),
+        size: 31 + ((i * 13) % 22),
+        dur: 46 + ((i * 17) % 40),
+        delay: -(i * 13) % 60,
+        depth: 0.5 + ((i * 0.3) % 0.7),
+        flip: i % 2 === 0,
       })),
     [count]
   )
@@ -479,7 +472,7 @@ function SheepHerd({
             left: `${s.left}%`,
             width: s.size,
             transform: reduced_motion(s, parallax),
-            animation: `ow-graze ${s.dur}s linear ${s.delay}s infinite`,
+            animation: reduced ? "none" : `ow-graze ${s.dur}s linear ${s.delay}s infinite`,
           }}
         >
           <span

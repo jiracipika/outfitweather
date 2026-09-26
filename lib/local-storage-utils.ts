@@ -62,7 +62,7 @@ export function getSavedOutfits(): OutfitRecommendation[] {
   return readArray(FAVORITES_KEY).filter(isOutfit)
 }
 
-export function saveOutfitToLocalStorage(outfit: OutfitRecommendation): boolean {
+export function saveOutfitToLocalStorage(outfit: OutfitRecommendation): "saved" | "duplicate" | "error" {
   const favorites = getSavedOutfits()
   const exists = favorites.some(
     (favorite) =>
@@ -70,7 +70,8 @@ export function saveOutfitToLocalStorage(outfit: OutfitRecommendation): boolean 
       favorite.temperature === outfit.temperature &&
       favorite.location === outfit.location,
   )
-  return exists || writeArray(FAVORITES_KEY, [...favorites, outfit])
+  if (exists) return "duplicate"
+  return writeArray(FAVORITES_KEY, [...favorites, outfit]) ? "saved" : "error"
 }
 
 export function removeOutfitFromLocalStorage(id: string): boolean {

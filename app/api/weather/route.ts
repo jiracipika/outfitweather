@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-const WEATHER_API_URL = "https://api.weatherapi.com/v1/current.json"
+const WEATHER_API_URL = "https://api.weatherapi.com/v1/forecast.json"
 const REQUEST_TIMEOUT_MS = 8_000
 
 export async function GET(request: Request) {
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(WEATHER_API_URL)
-  url.search = new URLSearchParams({ key: apiKey, q: city, aqi: "no" }).toString()
+  url.search = new URLSearchParams({ key: apiKey, q: city, days: "3", aqi: "no", alerts: "no" }).toString()
 
   try {
     const response = await fetch(url, {
