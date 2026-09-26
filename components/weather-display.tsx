@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CloudRain, Droplets, Heart, Wind, Check, FlaskConical, Thermometer } from "lucide-react"
+import { CloudRain, Droplets, Heart, Wind, Check, FlaskConical, Thermometer, RefreshCw } from "lucide-react"
 import type { WeatherData, OutfitRecommendation } from "@/lib/types"
 import { saveOutfitToLocalStorage } from "@/lib/local-storage-utils"
 
@@ -11,9 +11,11 @@ interface WeatherDisplayProps {
   demo?: boolean
   unit: "C" | "F"
   onUnitChange: (unit: "C" | "F") => void
+  isRefreshing?: boolean
+  onRefresh?: () => void
 }
 
-export default function WeatherDisplay({ weather, outfit, demo = false, unit, onUnitChange }: WeatherDisplayProps) {
+export default function WeatherDisplay({ weather, outfit, demo = false, unit, onUnitChange, isRefreshing = false, onRefresh }: WeatherDisplayProps) {
   const [saveState, setSaveState] = useState<"idle" | "saved" | "duplicate" | "error">("idle")
   useEffect(() => {
     if (saveState === "idle") return
@@ -32,10 +34,14 @@ export default function WeatherDisplay({ weather, outfit, demo = false, unit, on
           <div className="ow-eyebrow flex items-center gap-2">{demo ? <FlaskConical size={14} /> : <span className="ow-live-dot" />}{demo ? "SAMPLE FORECAST" : "CURRENT CONDITIONS"}</div>
           <h2 className="ow-display mt-3 text-3xl sm:text-4xl">{weather.location.name}</h2>
           <p className="mt-1 text-sm text-white/70">{[weather.location.region, weather.location.country].filter(Boolean).join(", ")}</p>
+          {weather.location.localtime && <p className="mt-2 text-xs tracking-wide text-white/60">LOCAL TIME · {new Date(weather.location.localtime.replace(" ", "T")).toLocaleTimeString("en", { hour: "numeric", minute: "2-digit" })}</p>}
         </div>
-        <div className="ow-unit-toggle" role="group" aria-label="Temperature unit">
-          <button type="button" aria-pressed={unit === "C"} onClick={() => onUnitChange("C")} className={unit === "C" ? "active" : ""}>°C</button>
-          <button type="button" aria-pressed={unit === "F"} onClick={() => onUnitChange("F")} className={unit === "F" ? "active" : ""}>°F</button>
+        <div className="flex items-center gap-2">
+          {onRefresh && <button type="button" className="ow-refresh" onClick={onRefresh} disabled={isRefreshing} aria-label="Refresh forecast" title="Refresh forecast"><RefreshCw size={15} className={isRefreshing ? "animate-spin" : ""} /></button>}
+          <div className="ow-unit-toggle" role="group" aria-label="Temperature unit">
+            <button type="button" aria-pressed={unit === "C"} onClick={() => onUnitChange("C")} className={unit === "C" ? "active" : ""}>°C</button>
+            <button type="button" aria-pressed={unit === "F"} onClick={() => onUnitChange("F")} className={unit === "F" ? "active" : ""}>°F</button>
+          </div>
         </div>
       </div>
 
