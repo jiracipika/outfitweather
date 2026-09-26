@@ -24,9 +24,10 @@ Continue building your app on:
 
 ## ✨ Features
 
-*   **Real-time Weather Data:** Fetches current temperature, conditions, humidity, and wind speed for any city worldwide using WeatherAPI.com.
-*   **Dynamic Outfit Recommendations:** Provides personalized outfit suggestions with emojis and short descriptions based on temperature, rain, snow, and wind conditions.
-*   **Interactive Weather Animations:** Enjoy subtle, weather-specific animations (rain, snow, fog, sun, clouds, etc.) that dynamically appear based on current conditions.
+*   **Live weather and forecast:** Search a city or use browser location to see current conditions, the next 12 hours, and a three-day outlook using WeatherAPI.com. Your last searched city is available as a shortcut on your device.
+*   **Outfit recommendations:** Actionable layers and accessories based on temperature, rain, snow, wind, and any custom rules you configure.
+*   **Interactive skies:** Nine animated scenes, pointer parallax, clickable sheep, a motion control, and a clearly labeled sample gallery that works without an API key. System reduced-motion preferences are respected.
+*   **Temperature units:** Switch between Celsius and Fahrenheit on the forecast card; hourly and daily temperatures follow your selection.
 *   **Favorites Page:** Save your preferred outfit recommendations to `localStorage` and view them on a dedicated "Favorites" page.
 *   **Customizable Outfit Logic:** Define your own rules for what to wear under different weather conditions via a user-friendly interface.
 *   **Theme Toggle:** Switch between beautiful light and dark modes for a comfortable viewing experience.

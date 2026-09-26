@@ -3,6 +3,7 @@ export interface WeatherData {
     name: string
     region: string
     country: string
+    localtime?: string
   }
   current: {
     temp_c: number
@@ -15,6 +16,27 @@ export interface WeatherData {
     wind_kph: number
     is_day: number // 1 for day, 0 for night
     precip_mm: number // Precipitation in millimeters
+    feelslike_c?: number
+    uv?: number
+  }
+  forecast?: {
+    forecastday: Array<{
+      date: string
+      day: {
+        maxtemp_c: number
+        mintemp_c: number
+        daily_chance_of_rain?: number
+        daily_chance_of_snow?: number
+        condition: { text: string; icon: string; code: number }
+      }
+      hour: Array<{
+        time: string
+        temp_c: number
+        chance_of_rain?: number
+        chance_of_snow?: number
+        condition: { text: string; icon: string; code: number }
+      }>
+    }>
   }
 }
 

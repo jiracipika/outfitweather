@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: npx pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: npm run lint
+      - name: Type check
+        run: npm run check
       - name: Build
         run: npm run build
