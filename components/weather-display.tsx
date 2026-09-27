@@ -88,8 +88,16 @@ function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; 
 function getStyleNotes(weather: WeatherData): string[] {
   const notes: string[] = []
   const condition = weather.current.condition.text.toLowerCase()
+  const localDateTime = weather.location.localtime?.replace(" ", "T")
+  const localDate = localDateTime?.slice(0, 10)
+  const localHour = localDateTime ? Number(localDateTime.slice(11, 13)) : -1
   const upcomingRain = weather.forecast?.forecastday
     .flatMap((day) => day.hour)
+    .filter((hour) => {
+      const hourDate = hour.time.slice(0, 10)
+      const hourOfDay = Number(hour.time.slice(11, 13))
+      return !localDate || hourDate > localDate || (hourDate === localDate && hourOfDay >= localHour)
+    })
     .slice(0, 8)
     .some((hour) => (hour.chance_of_rain ?? 0) >= 45 || (hour.chance_of_snow ?? 0) >= 45)
 
