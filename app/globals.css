@@ -388,3 +388,61 @@ body {
   .ow-scene-chip,.ow-last-city { transition:none!important; }
   .ow-scene-chip:hover,.ow-last-city:hover { transform:none; }
 }
+
+
+/* Second pass: useful clothing cues and a clearer weather-preview chooser. */
+.ow-page { font-family:var(--font-body),ui-sans-serif,system-ui,sans-serif; }
+.ow-page-status {
+  display:flex;align-items:center;gap:.72rem;min-height:42px;padding:.45rem .8rem;
+  border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(8,18,34,.22);
+  color:rgba(255,255,255,.84);font-size:.62rem;font-weight:850;letter-spacing:.14em;
+  backdrop-filter:blur(16px);
+}
+.ow-demo-dot { width:7px;height:7px;flex:none;border-radius:50%;background:#ffd08a;box-shadow:0 0 0 4px rgba(255,208,138,.14); }
+.ow-page-status-location { border-left:1px solid rgba(255,255,255,.28);padding-left:.72rem;color:white;letter-spacing:.02em;font-size:.76rem;font-weight:700; }
+.ow-scene-grid { grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); }
+.ow-scene-chip { min-height:78px;padding:.8rem .9rem; }
+.ow-scene-emoji {
+  display:grid;place-items:center;width:44px;height:44px;flex:none;border-radius:15px;
+  background:rgba(255,255,255,.12);font-size:1.35rem;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),background .28s ease;
+}
+.ow-scene-chip:hover .ow-scene-emoji { transform:translateY(-2px) rotate(-7deg) scale(1.06);background:rgba(255,225,174,.18); }
+.ow-scene-copy { display:flex;min-width:0;flex:1;flex-direction:column;align-items:flex-start;gap:.28rem;text-align:left; }
+.ow-scene-copy strong { font-size:.84rem;font-weight:750;letter-spacing:-.015em; }
+.ow-scene-copy small { color:rgba(255,255,255,.65);font-size:.66rem;line-height:1.25; }
+.ow-scene-arrow { color:rgba(255,255,255,.55);font-size:.88rem;transition:transform .2s ease,color .2s ease; }
+.ow-scene-chip:hover .ow-scene-arrow { transform:translate(2px,-2px);color:#ffe1ae; }
+.ow-style-notes {
+  margin-top:1rem;padding:1rem;border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  background:linear-gradient(120deg,rgba(255,227,187,.1),rgba(255,255,255,.055));
+  animation:ow-rise-in .48s cubic-bezier(.2,.8,.2,1) both;
+}
+.ow-style-notes-heading { display:flex;align-items:center;gap:.7rem;color:#ffe4bb; }
+.ow-style-notes-heading > span { display:grid;place-items:center;width:31px;height:31px;border-radius:11px;background:rgba(255,225,174,.13); }
+.ow-style-notes-heading strong,.ow-style-notes-heading small { display:block; }
+.ow-style-notes-heading strong { font-size:.82rem;letter-spacing:-.01em; }
+.ow-style-notes-heading small { margin-top:.15rem;color:rgba(255,255,255,.6);font-size:.65rem; }
+.ow-style-note-list { display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem; }
+.ow-style-note { display:inline-flex;align-items:center;min-height:31px;padding:.4rem .65rem;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(6,17,33,.18);color:rgba(255,255,255,.88);font-size:.68rem;line-height:1.3; }
+.ow-weather-card { animation:ow-rise-in .56s cubic-bezier(.2,.8,.2,1) both; }
+.ow-condition-icon { filter:drop-shadow(0 8px 20px rgba(3,11,24,.24));transition:transform .35s cubic-bezier(.2,.8,.2,1); }
+.ow-weather-card:hover .ow-condition-icon { transform:translateY(-3px) rotate(-4deg); }
+.ow-metric { min-height:70px; }
+.ow-unit-toggle button { transition:background .2s ease,color .2s ease,transform .2s ease; }
+.ow-unit-toggle button:active { transform:scale(.92); }
+@media (max-width:640px) {
+  .ow-page-status { gap:.5rem;padding:.42rem .65rem;font-size:.54rem;letter-spacing:.1em; }
+  .ow-page-status-location { padding-left:.5rem;font-size:.68rem; }
+  .ow-scene-grid { grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem; }
+  .ow-scene-chip { min-height:73px;padding:.6rem;gap:.5rem; }
+  .ow-scene-emoji { width:36px;height:36px;border-radius:13px;font-size:1.1rem; }
+  .ow-scene-copy strong { font-size:.74rem; }
+  .ow-scene-copy small { font-size:.59rem; }
+  .ow-scene-arrow { display:none; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .ow-weather-card,.ow-style-notes { animation:none!important; }
+  .ow-condition-icon,.ow-scene-emoji,.ow-scene-arrow,.ow-unit-toggle button { transition:none!important; }
+  .ow-weather-card:hover .ow-condition-icon,.ow-scene-chip:hover .ow-scene-emoji,.ow-scene-chip:hover .ow-scene-arrow { transform:none; }
+}
