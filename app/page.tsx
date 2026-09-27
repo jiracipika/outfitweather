@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { CloudOff, Compass, LocateFixed, Sparkles, Volume2, VolumeX } from "lucide-react"
+import { CloudOff, Compass, LocateFixed, Sparkles } from "lucide-react"
 import SearchBar from "@/components/search-bar"
 import WeatherDisplay from "@/components/weather-display"
 import WeatherScenery from "@/components/weather-scenery"
@@ -117,15 +117,15 @@ export default function HomePage() {
     <div className="ow-page relative min-h-[calc(100vh-4rem)] w-full overflow-hidden" style={{ background: scene.gradient }}>
       <WeatherScenery scene={scene.key} motion={motion} parallax={parallax} sheepCount={sceneWeather ? sheepForWeather(sceneWeather) : 3} onSheepClick={petSheep} />
       <div className="ow-vignette pointer-events-none fixed inset-0 z-[1]" />
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 pt-8 sm:px-8 md:pt-14">
-        <div className="mb-10 flex items-center justify-between gap-4">
-          <div className="ow-eyebrow flex items-center gap-2"><span className="ow-live-dot" /> THE WEATHER, WEARABLE</div>
-          <button type="button" onClick={() => setMotion((value) => !value)} className="ow-utility" aria-label={motion ? "Turn off pointer movement" : "Turn on pointer movement"} title="Toggle pointer movement">
-            {motion ? <Volume2 size={16} /> : <VolumeX size={16} />} <span className="hidden sm:inline">Motion {motion ? "on" : "off"}</span>
+      <div className="ow-shell relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 pt-8 sm:px-8 md:pt-14">
+        <div className="ow-topbar mb-10 flex items-center justify-between gap-4">
+          <div className="ow-brand flex items-center gap-3"><span className="ow-brand-icon"><Sparkles size={19} /></span><span><strong>Outfit Weather</strong><small>YOUR WEATHER, WORN WELL</small></span></div>
+          <button type="button" onClick={() => setMotion((value) => !value)} className="ow-utility" aria-label={motion ? "Turn off parallax motion" : "Turn on parallax motion"} title="Toggle parallax motion">
+            <Sparkles size={16} /> <span className="hidden sm:inline">Motion {motion ? "on" : "off"}</span>
           </button>
         </div>
 
-        <section className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        <section className="ow-dashboard grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div className="max-w-2xl">
             <div className="ow-kicker mb-6 inline-flex items-center gap-2"><Sparkles size={14} /> A LITTLE FORECAST FOR YOUR FIT</div>
             <h1 className="ow-display ow-hero-title">Look outside.<br /><em>Dress better.</em></h1>
@@ -156,7 +156,7 @@ export default function HomePage() {
 
         {weatherData && !preview && <div className="mt-12"><ForecastStrip weather={weatherData} unit={unit} /></div>}
 
-        <section className="ow-scene-section mt-14" aria-label="Weather scene previews">
+        <section className="ow-gallery ow-scene-section mt-14" aria-label="Weather scene previews">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div><div className="ow-eyebrow mb-2">INTERACTIVE SKY GALLERY</div><h2 className="ow-display text-2xl sm:text-3xl">Try a different forecast</h2></div>
             {preview && weatherData && <button type="button" className="ow-return" onClick={() => setPreview(null)}>↩ Back to live weather</button>}
