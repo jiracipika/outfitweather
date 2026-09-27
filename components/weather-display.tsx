@@ -26,6 +26,7 @@ export default function WeatherDisplay({ weather, outfit, demo = false, unit, on
   const save = () => setSaveState(saveOutfitToLocalStorage(outfit))
   const temperature = unit === "C" ? Math.round(weather.current.temp_c) : Math.round(weather.current.temp_c * 9 / 5 + 32)
   const wind = unit === "C" ? `${Math.round(weather.current.wind_kph)} km/h` : `${Math.round(weather.current.wind_kph / 1.609)} mph`
+  const styleNotes = getStyleNotes(weather)
 
   return (
     <article className="ow-weather-card" aria-label={`${demo ? "Sample" : "Live"} weather for ${weather.location.name}`}>
@@ -70,6 +71,10 @@ export default function WeatherDisplay({ weather, outfit, demo = false, unit, on
         </div>
         {saveState !== "idle" && <div role="status" className="mt-3 flex items-center gap-2 text-xs text-white"><Check size={14} />{saveState === "saved" ? "Added to your favorites" : saveState === "duplicate" ? "Already in your favorites" : "Could not save. Check browser storage settings."}</div>}
       </div>
+      {styleNotes.length > 0 && <div className="ow-style-notes" aria-label="Practical clothing tips">
+        <div className="ow-style-notes-heading"><span>✦</span><div><strong>Before you go</strong><small>Small details for today’s conditions</small></div></div>
+        <div className="ow-style-note-list">{styleNotes.map((note) => <span className="ow-style-note" key={note}>{note}</span>)}</div>
+      </div>}
       {demo && <p className="mt-4 text-center text-xs text-white/65">Sample conditions for this scene · search a city for live weather</p>}
     </article>
   )
@@ -77,4 +82,25 @@ export default function WeatherDisplay({ weather, outfit, demo = false, unit, on
 
 function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return <div className="ow-metric"><div className="flex items-center gap-1.5 text-white/65">{icon}<span>{label}</span></div><strong className="mt-2 block text-sm font-semibold text-white">{value}</strong></div>
+}
+
+
+function getStyleNotes(weather: WeatherData): string[] {
+  const notes: string[] = []
+  const condition = weather.current.condition.text.toLowerCase()
+  const upcomingRain = weather.forecast?.forecastday
+    .flatMap((day) => day.hour)
+    .slice(0, 8)
+    .some((hour) => (hour.chance_of_rain ?? 0) >= 45 || (hour.chance_of_snow ?? 0) >= 45)
+
+  if (weather.current.precip_mm > 0 || /rain|drizzle|snow|sleet|shower/.test(condition)) {
+    notes.push("Choose shoes that can handle wet ground")
+  } else if (upcomingRain) {
+    notes.push("Pack a light shell in case rain moves in")
+  }
+  if (weather.current.temp_c <= 5) notes.push("Add a warm mid-layer")
+  else if (weather.current.wind_kph >= 30) notes.push("Secure a wind-resistant outer layer")
+  if ((weather.current.uv ?? 0) >= 6) notes.push("Bring sunglasses for strong UV")
+  else if (weather.current.humidity >= 75 && weather.current.temp_c >= 22) notes.push("Breathable fabrics may feel cooler")
+  return notes.slice(0, 2)
 }
