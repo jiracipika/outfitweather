@@ -18,6 +18,11 @@ const SCENE_EMOJI: Record<SceneKey, string> = {
   thunder: "⛈️", snow: "❄️", fog: "🌫️", wind: "🍃", heat: "🔥",
 }
 const SHEEP_MOODS = ["Baa!", "The sheep approve of this forecast.", "One sheep looked up. Briefly.", "Sheep lore unlocked: they judge your outfit."]
+const SCENE_CUE: Record<SceneKey, string> = {
+  "clear-day": "Bright sun, easy layers", "clear-night": "Cooler after dark", cloudy: "Soft light, mild layers",
+  rain: "Wet streets, stay covered", thunder: "Storm timing matters", snow: "Warmth from head to toe",
+  fog: "Low visibility, lighter layers", wind: "Secure your outer layer", heat: "Keep fabrics light",
+}
 
 export default function HomePage() {
   const params = useSearchParams()
@@ -119,7 +124,11 @@ export default function HomePage() {
       <div className="ow-vignette pointer-events-none fixed inset-0 z-[1]" />
       <div className="ow-shell relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 pt-8 sm:px-8 md:pt-14">
         <div className="ow-topbar mb-10 flex items-center justify-between gap-4">
-          <div className="ow-brand flex items-center gap-3"><span className="ow-brand-icon"><Sparkles size={19} /></span><span><strong>Outfit Weather</strong><small>YOUR WEATHER, WORN WELL</small></span></div>
+          <div className="ow-page-status">
+            <span className={weatherData && !preview ? "ow-live-dot" : "ow-demo-dot"} />
+            <span>{preview ? "SCENE PREVIEW" : weatherData ? "LIVE WEATHER" : "YOUR DAILY WEATHER BRIEF"}</span>
+            {sceneWeather && <span className="ow-page-status-location">{sceneWeather.location.name}</span>}
+          </div>
           <button type="button" onClick={() => setMotion((value) => !value)} className="ow-utility" aria-label={motion ? "Turn off parallax motion" : "Turn on parallax motion"} title="Toggle parallax motion">
             <Sparkles size={16} /> <span className="hidden sm:inline">Motion {motion ? "on" : "off"}</span>
           </button>
@@ -165,7 +174,9 @@ export default function HomePage() {
             {DEMO_SCENE_KEYS.map((key) => {
               const active = preview === key
               return <button key={key} type="button" onClick={() => choosePreview(key)} aria-pressed={active} className={`ow-scene-chip ${active ? "is-active" : ""}`}>
-                <span aria-hidden="true" className="text-xl">{SCENE_EMOJI[key]}</span><span>{getWeatherScene(buildDemoWeather(key)).label}</span>
+                <span aria-hidden="true" className="ow-scene-emoji">{SCENE_EMOJI[key]}</span>
+                <span className="ow-scene-copy"><strong>{getWeatherScene(buildDemoWeather(key)).label}</strong><small>{SCENE_CUE[key]}</small></span>
+                <span aria-hidden="true" className="ow-scene-arrow">↗</span>
               </button>
             })}
           </div>
