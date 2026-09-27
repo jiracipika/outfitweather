@@ -314,3 +314,77 @@ body {
 .ow-scene-chip::after { position:absolute; inset:0; content:""; transform:translateX(-140%) skewX(-20deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent); transition:transform .65s; }
 .ow-scene-chip:hover::after { transform:translateX(140%) skewX(-20deg); }
 @media (prefers-reduced-motion:reduce) { .ow-scene-wash,.ow-sunrays,.ow-sunrays > div,.ow-rain-haze i,.ow-snow-haze,.ow-wind-streaks i,.ow-weather-card,.ow-empty-card,.ow-outfit-panel { animation:none!important; transition:none!important; } .ow-scene-chip::after { display:none; } }
+
+
+/* Outfit Weather studio refresh: native CSS/SVG motion, with no paid service,
+   remote assets, or runtime animation dependency. */
+@keyframes ow-rise-in { from { opacity:0; transform:translate3d(0,18px,0); } to { opacity:1; transform:translate3d(0,0,0); } }
+@keyframes ow-brand-glow {
+  0%,100% { box-shadow:0 0 0 0 rgba(255,221,165,.08),0 8px 24px rgba(2,10,24,.14); }
+  50% { box-shadow:0 0 0 7px rgba(255,221,165,.045),0 10px 32px rgba(2,10,24,.18); }
+}
+@keyframes ow-search-sheen { 0% { background-position:120% 0; } 100% { background-position:-120% 0; } }
+.ow-page { min-height:100svh; font-family:var(--font-sans),ui-sans-serif,system-ui,sans-serif; }
+.ow-shell { max-width:1400px; }
+.ow-topbar { min-height:54px; animation:ow-rise-in .7s cubic-bezier(.2,.8,.2,1) both; }
+.ow-brand { color:rgba(255,255,255,.96); }
+.ow-brand-icon {
+  display:grid;width:42px;height:42px;place-items:center;border-radius:15px;color:#172947;
+  background:linear-gradient(145deg,#fff0cf,#ffd18b);box-shadow:0 8px 25px rgba(9,18,33,.2);
+  animation:ow-brand-glow 5s ease-in-out infinite;
+}
+.ow-brand strong { display:block;font-size:.94rem;letter-spacing:-.025em;line-height:1.1; }
+.ow-brand small { display:block;margin-top:4px;color:rgba(255,255,255,.63);font-size:.57rem;font-weight:800;letter-spacing:.16em; }
+.ow-utility { min-height:40px;border-color:rgba(255,255,255,.28);background:rgba(8,18,34,.2); }
+.ow-dashboard { animation:ow-rise-in .85s .08s cubic-bezier(.2,.8,.2,1) both; }
+.ow-kicker { border-color:rgba(255,255,255,.25);background:rgba(16,29,49,.22);color:rgba(255,255,255,.94);box-shadow:0 8px 28px rgba(8,18,35,.1); }
+.ow-hero-title { max-width:10ch;font-size:clamp(4.4rem,8vw,7.8rem);line-height:.91;letter-spacing:-.075em;text-wrap:balance; }
+.ow-hero-title em { color:#ffe1ae;text-shadow:0 8px 36px rgba(93,51,16,.17); }
+.ow-intro { max-width:33rem;font-size:clamp(1rem,1.5vw,1.15rem);line-height:1.75; }
+.ow-search { border-radius:18px;background-color:rgba(7,18,35,.39);box-shadow:0 14px 38px rgba(6,15,30,.2);transition:border-color .25s ease,box-shadow .25s ease,background-color .25s ease; }
+.ow-search:focus-within { border-color:rgba(255,226,180,.9);box-shadow:0 0 0 4px rgba(255,226,180,.12),0 18px 46px rgba(6,15,30,.24); }
+.ow-search-submit { border-radius:13px;background:linear-gradient(145deg,#ffe8c0,#ffcc7b);box-shadow:0 5px 14px rgba(9,20,35,.18); }
+.ow-location-button { border-radius:18px;background:rgba(7,18,35,.26); }
+.ow-feature { perspective:1200px; }
+.ow-empty-card,.ow-weather-card {
+  border-radius:30px;border-color:rgba(255,255,255,.35);
+  background:linear-gradient(145deg,rgba(12,24,42,.56),rgba(11,24,44,.33));
+  box-shadow:0 26px 75px rgba(3,10,24,.27),inset 0 1px 0 rgba(255,255,255,.16);
+  backdrop-filter:blur(24px) saturate(1.15);-webkit-backdrop-filter:blur(24px) saturate(1.15);
+}
+.ow-empty-card { min-height:390px;padding:clamp(1.5rem,4vw,3rem); }
+.ow-empty-icon { display:grid;place-items:center;width:64px;height:64px;margin-bottom:2.3rem;border:1px solid rgba(255,255,255,.2);border-radius:22px;background:rgba(255,255,255,.11);color:#ffe4ba; }
+.ow-empty-orbit { color:rgba(255,229,187,.45); }
+.ow-scene-section { border-top:1px solid rgba(255,255,255,.23);padding-top:1.6rem;animation:ow-rise-in .8s .2s cubic-bezier(.2,.8,.2,1) both; }
+.ow-gallery h2 { letter-spacing:-.04em; }
+.ow-scene-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:.7rem; }
+.ow-scene-chip {
+  position:relative;isolation:isolate;overflow:hidden;min-height:64px;justify-content:flex-start;gap:.72rem;
+  border:1px solid rgba(255,255,255,.24);border-radius:18px;
+  background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.07));color:rgba(255,255,255,.94);
+  box-shadow:0 8px 24px rgba(5,13,27,.08);
+  transition:transform .24s cubic-bezier(.2,.8,.2,1),border-color .24s ease,background .24s ease,box-shadow .24s ease;
+}
+.ow-scene-chip::after { content:"";position:absolute;z-index:-1;inset:0;opacity:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.17) 48%,transparent 70%);background-size:240% 100%;transition:opacity .2s ease; }
+.ow-scene-chip:hover { transform:translateY(-4px);border-color:rgba(255,231,193,.62);background-color:rgba(255,255,255,.13);box-shadow:0 14px 30px rgba(5,13,27,.2); }
+.ow-scene-chip:hover::after { opacity:1;animation:ow-search-sheen .9s ease both; }
+.ow-scene-chip.is-active { border-color:#ffe1ae;background:linear-gradient(145deg,rgba(255,226,182,.25),rgba(255,255,255,.12));box-shadow:0 0 0 3px rgba(255,225,174,.12),0 12px 32px rgba(5,13,27,.16); }
+.ow-scene-chip:focus-visible,.ow-utility:focus-visible,.ow-location-button:focus-visible,.ow-return:focus-visible { outline:2px solid #ffe1ae;outline-offset:3px; }
+.ow-last-city { color:#ffe2b6;transition:transform .2s ease,color .2s ease; }
+.ow-last-city:hover { color:white;transform:translateX(3px); }
+.ow-sheep-toast { border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(9,20,36,.76);box-shadow:0 14px 40px rgba(3,10,24,.3);backdrop-filter:blur(18px); }
+.ow-page button:disabled { cursor:wait; }
+@media (max-width:640px) {
+  .ow-shell { padding-top:1.35rem; }
+  .ow-topbar { margin-bottom:2.4rem; }
+  .ow-brand-icon { width:38px;height:38px;border-radius:14px; }
+  .ow-hero-title { font-size:clamp(3.65rem,15vw,5.2rem); }
+  .ow-empty-card { min-height:330px;border-radius:24px; }
+  .ow-scene-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .ow-scene-chip { min-height:58px;padding:.7rem .75rem;font-size:.78rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .ow-topbar,.ow-dashboard,.ow-scene-section,.ow-brand-icon { animation:none!important; }
+  .ow-scene-chip,.ow-last-city { transition:none!important; }
+  .ow-scene-chip:hover,.ow-last-city:hover { transform:none; }
+}
