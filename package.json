@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "check": "tsc --noEmit",
-    "test:outfits": "node --experimental-strip-types --test scripts/outfit-styling.test.mjs"
+    "test:outfits": "node --experimental-strip-types --test scripts/outfit-styling.test.mjs tests/weather-utils.test.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
