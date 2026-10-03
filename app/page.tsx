@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { CloudOff, Compass, LocateFixed, Sparkles } from "lucide-react"
+import { CloudOff, LocateFixed, Sparkles } from "lucide-react"
 import SearchBar from "@/components/search-bar"
 import WeatherDisplay from "@/components/weather-display"
+import OutfitStudio from "@/components/outfit-studio"
 import WeatherScenery from "@/components/weather-scenery"
 import ForecastStrip from "@/components/forecast-strip"
 import { WeatherSkeleton } from "@/components/loading-skeleton"
@@ -37,6 +38,7 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null)
   const [unit, setUnit] = useState<"C" | "F">("C")
   const [motion, setMotion] = useState(true)
+  const [forHer, setForHer] = useState(false)
   const [parallax, setParallax] = useState({ x: 0, y: 0 })
   const [sheepPetted, setSheepPetted] = useState(0)
   const [sheepMood, setSheepMood] = useState<string | null>(null)
@@ -51,7 +53,7 @@ export default function HomePage() {
   }, [sceneWeather, customRules])
 
   useEffect(() => {
-    if (!motion) { setParallax({ x: 0, y: 0 }); return }
+    if (!motion || window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches) { setParallax({ x: 0, y: 0 }); return }
     const onMove = (e: PointerEvent) => {
       if (pointerFrame.current) return
       const x = (e.clientX / window.innerWidth) * 2 - 1
@@ -68,6 +70,7 @@ export default function HomePage() {
   useEffect(() => () => requestRef.current?.abort(), [])
   useEffect(() => {
     try { setLastCity(window.localStorage.getItem("ow:last-city")) } catch { /* private browsing */ }
+    try { setForHer(window.localStorage.getItem("ow:for-her") === "true") } catch { /* Storage is optional. */ }
     setCustomRules(getCustomOutfitRules())
   }, [])
 
@@ -113,13 +116,19 @@ export default function HomePage() {
     setPreview(key)
   }
 
+  const toggleForHer = () => {
+    const next = !forHer
+    setForHer(next)
+    try { window.localStorage.setItem("ow:for-her", String(next)) } catch { /* Keep this choice in memory. */ }
+  }
+
   const petSheep = () => {
     setSheepPetted((n) => n + 1)
     setSheepMood(SHEEP_MOODS[Math.floor(Math.random() * SHEEP_MOODS.length)])
   }
 
   return (
-    <div className="ow-page relative min-h-[calc(100vh-4rem)] w-full overflow-hidden" style={{ background: scene.gradient }}>
+    <div className="ow-page ow-atelier-page relative min-h-[calc(100vh-4rem)] w-full overflow-hidden" data-for-her={forHer ? "true" : "false"} data-motion={motion ? "on" : "off"} style={{ background: scene.gradient }}>
       <WeatherScenery scene={scene.key} motion={motion} parallax={parallax} sheepCount={sceneWeather ? sheepForWeather(sceneWeather) : 3} onSheepClick={petSheep} />
       <div className="ow-vignette pointer-events-none fixed inset-0 z-[1]" />
       <div className="ow-shell relative z-10 mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 pt-8 sm:px-8 md:pt-14">
@@ -129,16 +138,17 @@ export default function HomePage() {
             <span>{preview ? "SCENE PREVIEW" : weatherData ? "LIVE WEATHER" : "YOUR DAILY WEATHER BRIEF"}</span>
             {sceneWeather && <span className="ow-page-status-location">{sceneWeather.location.name}</span>}
           </div>
-          <button type="button" onClick={() => setMotion((value) => !value)} className="ow-utility" aria-label={motion ? "Turn off parallax motion" : "Turn on parallax motion"} title="Toggle parallax motion">
-            <Sparkles size={16} /> <span className="hidden sm:inline">Motion {motion ? "on" : "off"}</span>
-          </button>
+          <div className="atelier-top-controls">
+            <button type="button" onClick={() => setMotion(value => !value)} className="ow-utility" aria-pressed={motion} aria-label={motion ? "Turn off animations and movement" : "Turn on animations and movement"}><Sparkles size={16} /><span>Motion {motion ? "on" : "off"}</span></button>
+            <button type="button" role="switch" aria-checked={forHer} onClick={toggleForHer} className="atelier-her-toggle"><span>For her</span><span className="atelier-switch-track" aria-hidden="true"><i /></span></button>
+          </div>
         </div>
 
         <section className="ow-dashboard grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div className="max-w-2xl">
-            <div className="ow-kicker mb-6 inline-flex items-center gap-2"><Sparkles size={14} /> A LITTLE FORECAST FOR YOUR FIT</div>
-            <h1 className="ow-display ow-hero-title">Look outside.<br /><em>Dress better.</em></h1>
-            <p className="ow-intro mt-6 max-w-lg">Real weather, a ready to wear recommendation, and a sky that changes with the forecast. Where are you headed?</p>
+            <div className="ow-kicker mb-6 inline-flex items-center gap-2"><Sparkles size={14} /> THE DAILY WARDROBE EDIT</div>
+            <h1 className="ow-display ow-hero-title">A forecast.<br /><em>A whole look.</em></h1>
+            <p className="ow-intro mt-6 max-w-lg">A little weather wisdom. A look that feels like you. Pick your city, choose your plans, and leave the outfit to us.</p>
             <div className="mt-9 flex max-w-xl flex-col gap-3 sm:flex-row">
               <SearchBar onSearch={fetchWeather} isLoading={loading} />
               <button type="button" onClick={useLocation} disabled={loading} className="ow-location-button"><LocateFixed size={18} /> Use my location</button>
@@ -150,20 +160,21 @@ export default function HomePage() {
 
           <div className="ow-feature relative">
             {loading && !sceneWeather ? <WeatherSkeleton /> : sceneWeather && recommendation ? (
-              <WeatherDisplay key={`${preview ?? "live"}-${sceneWeather.location.name}-${scene.key}`} weather={sceneWeather} outfit={recommendation} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} isRefreshing={loading} onRefresh={currentQuery ? () => void fetchWeather(currentQuery) : undefined} />
+              <OutfitStudio weather={sceneWeather} base={recommendation} forHer={forHer} demo={Boolean(preview)} />
             ) : (
-              <div className="ow-empty-card">
-                <div className="ow-empty-icon"><Compass size={34} strokeWidth={1.5} /></div>
-                <span className="ow-eyebrow">YOUR FORECAST AWAITS</span>
-                <h2 className="ow-display mt-3 text-4xl">A good day starts<br />with the right layers.</h2>
-                <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/70">Find your city for live conditions, or pick a sky below to explore how the page responds.</p>
-                <div className="ow-empty-orbit" aria-hidden="true">✦</div>
+              <div className="atelier-empty">
+                <span className="atelier-label">YOUR OUTFIT STARTS HERE</span>
+                <div className="atelier-empty-art" aria-hidden="true"><span>✦</span><ShirtOutline /><i>01 / THE DAILY EDIT</i></div>
+                <h2 className="ow-display">{forHer ? "Made for her kind of day." : "Good weather. Better layers."}</h2>
+                <p>Find your forecast to build a complete look. Or take the wardrobe for a spin with sample weather.</p>
+                <button type="button" onClick={() => choosePreview("clear-day")} className="atelier-save">Try a sunny-day look <span aria-hidden="true">↗</span></button>
               </div>
             )}
           </div>
         </section>
 
-        {weatherData && !preview && <div className="mt-12"><ForecastStrip weather={weatherData} unit={unit} /></div>}
+        {sceneWeather && recommendation && <details className="atelier-weather-details"><summary>Behind the look <span>{sceneWeather.location.name} · {sceneWeather.current.condition.text}</span><b aria-hidden="true">+</b></summary><WeatherDisplay weather={sceneWeather} outfit={recommendation} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} isRefreshing={loading} onRefresh={!preview && currentQuery ? () => void fetchWeather(currentQuery) : undefined} /></details>}
+        {sceneWeather && <div className="mt-12"><ForecastStrip weather={sceneWeather} unit={unit} /></div>}
 
         <section className="ow-gallery ow-scene-section mt-14" aria-label="Weather scene previews">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
@@ -192,4 +203,8 @@ function sheepForWeather(w: WeatherData): number {
   if (w.current.temp_c <= -5 || w.current.temp_c >= 32) return 1
   if (w.current.wind_kph > 40) return 2
   return 4
+}
+
+function ShirtOutline() {
+  return <svg viewBox="0 0 180 180"><path d="M57 35 72 27 Q90 43 108 27 L123 35 157 68 133 88 117 71V150H63V71L47 88 23 68Z" fill="#c0c9b7" stroke="#34453c" strokeWidth="1.5" /><path d="M75 31Q90 58 105 31M70 136H110" fill="none" stroke="#34453c" opacity=".4" /></svg>
 }
