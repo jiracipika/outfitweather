@@ -1,4 +1,5 @@
 import type { OutfitRecommendation, CustomOutfitRule } from "./types"
+import type { StyledLook } from "./outfit-styling"
 
 const FAVORITES_KEY = "weatherWearFavorites"
 const CUSTOM_RULES_KEY = "weatherWearCustomRules"
@@ -59,7 +60,15 @@ function writeArray(key: string, value: unknown[]): boolean {
 }
 
 export function getSavedOutfits(): OutfitRecommendation[] {
-  return readArray(FAVORITES_KEY).filter(isOutfit)
+  return readArray(FAVORITES_KEY).filter(isOutfit).map(outfit => ({ ...outfit, styledLook: isStyledLook(outfit.styledLook) ? outfit.styledLook : undefined }))
+}
+
+function isStyledLook(value: unknown): value is StyledLook {
+  if (!value || typeof value !== "object") return false
+  const look = value as Record<string, unknown>
+  return typeof look.title === "string" && typeof look.note === "string"
+    && Array.isArray(look.palette) && look.palette.length === 3 && look.palette.every(color => typeof color === "string" && /^#[0-9a-f]{6}$/i.test(color))
+    && Array.isArray(look.pieces) && look.pieces.length > 0 && look.pieces.length <= 6 && look.pieces.every(piece => piece && typeof piece.label === "string" && ["top", "bottom", "dress", "layer", "shoes", "accessory"].includes(piece.kind))
 }
 
 export function saveOutfitToLocalStorage(outfit: OutfitRecommendation): "saved" | "duplicate" | "error" {

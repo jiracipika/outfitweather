@@ -1,0 +1,39 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { buildStyledLook } from "../lib/outfit-styling.ts";
+const weather = (temp, overrides = {}) => ({ location: { name: "Toronto", region: "Ontario", country: "Canada", localtime: "2026-10-03 14:00" }, current: { temp_c: temp, feelslike_c: temp, condition: { text: "Sunny", code: 1000, icon: "//cdn.test/sun.png" }, humidity: 50, wind_kph: 5, precip_mm: 0, uv: 2, is_day: 1, ...overrides } });
+test("For her changes suggested clothes", () => { const w=weather(22); assert.notDeepEqual(buildStyledLook(w,true,"casual","trousers").pieces,buildStyledLook(w,false,"casual","trousers").pieces); });
+test("dress choice is respected in warm calm weather", () => { assert.ok(buildStyledLook(weather(26),true,"casual","dress").pieces.some(p=>p.kind==="dress")); });
+test("cold or strong wind switches dress preference to warm trousers", () => { for(const w of [weather(-8),weather(18,{wind_kph:40})]) { const look=buildStyledLook(w,true,"evening","dress"); assert.ok(!look.pieces.some(p=>p.kind==="dress")); assert.match(look.note,/Trousers/); } });
+test("freezing snow includes insulated coat and gripping boots in every style", () => { for(const occasion of ["casual","work","evening"]) for(const her of [true,false]) { const labels=buildStyledLook(weather(-12,{condition:{text:"Snow",code:1213,icon:""}}),her,occasion,"dress").pieces.map(p=>p.label).join(" "); assert.match(labels,/Insulated waterproof coat/); assert.match(labels,/boots with grip/); } });
+test("another look changes pieces while keeping wet weather protection", () => { const w=weather(18,{precip_mm:2}); const a=buildStyledLook(w,true,"casual","trousers",0), b=buildStyledLook(w,true,"casual","trousers",1); assert.notDeepEqual(a.pieces,b.pieces); for(const look of [a,b]) assert.ok(look.pieces.some(p=>p.label==="Light rain shell")); });
+test("old forecast rain is ignored and upcoming rain is included", () => { const w=weather(22); w.forecast={forecastday:[{date:"2026-10-03",hour:[{time:"2026-10-03 08:00",chance_of_rain:100},{time:"2026-10-03 15:00",chance_of_rain:0}]}]}; assert.ok(!buildStyledLook(w,true,"work","trousers").pieces.some(p=>/rain shell/.test(p.label))); w.forecast.forecastday[0].hour[1].chance_of_rain=60; assert.ok(buildStyledLook(w,true,"work","trousers").pieces.some(p=>/rain shell/.test(p.label))); });
+
+test("Surprise me alternates silhouettes in suitable weather", () => {
+  const w = weather(24);
+  assert.ok(buildStyledLook(w, true, "casual", "auto", 0).pieces.some(piece => piece.kind === "bottom"));
+  assert.ok(buildStyledLook(w, true, "casual", "auto", 1).pieces.some(piece => piece.kind === "dress"));
+});
+
+test("personal warmth preference changes the clothes, never freezing protection", () => {
+  const mild = weather(23);
+  const cold = buildStyledLook(mild, true, "casual", "trousers", 0, { comfort: "cold" });
+  const warm = buildStyledLook(mild, true, "casual", "trousers", 0, { comfort: "warm" });
+  assert.ok(cold.pieces.some(piece => piece.kind === "layer"));
+  assert.ok(!warm.pieces.some(piece => piece.kind === "layer"));
+  for (const temp of [-10, 0, 5]) {
+    const look = buildStyledLook(weather(temp), true, "work", "dress", 0, { comfort: "warm" });
+    assert.ok(look.pieces.some(piece => piece.label === "Insulated winter coat"));
+    assert.ok(look.pieces.some(piece => piece.label === "Lined trousers + thermal leggings"));
+    assert.ok(!look.pieces.some(piece => piece.kind === "dress"));
+  }
+});
+
+test("every palette keeps waterproof clothing in rainy conditions", () => {
+  for (const palette of ["soft", "earth", "classic"]) {
+    const look = buildStyledLook(weather(18, { precip_mm: 2 }), true, "evening", "dress", 0, { palette, comfort: "warm" });
+    assert.ok(look.pieces.some(piece => piece.label === "Light rain shell"));
+    assert.ok(look.pieces.some(piece => piece.label === "Water-resistant ankle boots"));
+    assert.equal(look.palette.length, 3);
+  }
+});

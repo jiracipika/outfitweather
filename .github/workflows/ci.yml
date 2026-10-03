@@ -24,5 +24,7 @@ jobs:
 
       - name: Type check
         run: npm run check
+      - name: Outfit recommendation tests
+        run: npm run test:outfits
       - name: Build
         run: npm run build

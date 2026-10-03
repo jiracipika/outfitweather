@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { getOutfitRecommendation } from '../lib/weather-utils';
-import type { WeatherData } from '../lib/types';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { getOutfitRecommendation } from '../lib/weather-utils.ts';
 
-const weather = (over: Partial<WeatherData['current']> = {}): WeatherData => ({
+const weather = (over = {}) => ({
   location: { name: 'Toronto', region: 'Ontario', country: 'Canada' },
   current: {
     temp_c: 18,
@@ -16,7 +16,7 @@ const weather = (over: Partial<WeatherData['current']> = {}): WeatherData => ({
 });
 
 describe('getOutfitRecommendation — temperature bands', () => {
-  const bands: [number, string][] = [
+  const bands = [
     [-5, 'Freezing'],
     [2, 'Very Cold'],
     [7, 'Cold'],
@@ -26,14 +26,14 @@ describe('getOutfitRecommendation — temperature bands', () => {
     [27, 'Hot'],
     [33, 'Very Hot'],
   ];
-  it.each(bands)('%i°C reads as %s', (temp, summary) => {
+  for (const [temp, summary] of bands) it(temp + '°C reads as ' + summary, () => {
     const r = getOutfitRecommendation(weather({ temp_c: temp }));
-    expect(r.conditionSummary).toBe(summary);
+    assert.equal(r.conditionSummary, summary);
   });
 
   it('band boundaries use >= min and < max (0°C is Very Cold, not Freezing)', () => {
-    expect(getOutfitRecommendation(weather({ temp_c: 0 })).conditionSummary).toBe('Very Cold');
-    expect(getOutfitRecommendation(weather({ temp_c: -0.5 })).conditionSummary).toBe('Freezing');
+    assert.equal(getOutfitRecommendation(weather({ temp_c: 0 })).conditionSummary, 'Very Cold');
+    assert.equal(getOutfitRecommendation(weather({ temp_c: -0.5 })).conditionSummary, 'Freezing');
   });
 });
 
@@ -42,44 +42,44 @@ describe('getOutfitRecommendation — precipitation (drizzle IS rain)', () => {
     const r = getOutfitRecommendation(
       weather({ temp_c: 18, precip_mm: 0.4, condition: { text: 'Light drizzle', icon: '', code: 1150 } }),
     );
-    expect(r.description).toContain('umbrella');
-    expect(r.conditionSummary).toBe('Rainy');
+    assert.ok((r.description).includes('umbrella'));
+    assert.equal(r.conditionSummary, 'Rainy');
   });
 
   it('explicit rain does too (waterproof-layer advice)', () => {
     const r = getOutfitRecommendation(weather({ temp_c: 12, precip_mm: 2, condition: { text: 'Moderate rain' } }));
-    expect(r.emoji).toBe('☔');
-    expect(r.description).toContain('waterproof layer');
+    assert.equal(r.emoji, '☔');
+    assert.ok((r.description).includes('waterproof layer'));
   });
 
   it('snow overrides rain wording, advising grippy footwear', () => {
     const r = getOutfitRecommendation(weather({ temp_c: -3, precip_mm: 1.5, condition: { text: 'Moderate snow' } }));
-    expect(r.description).toContain('grip for the snow');
-    expect(r.conditionSummary).toBe('Snowy');
+    assert.ok((r.description).includes('grip for the snow'));
+    assert.equal(r.conditionSummary, 'Snowy');
   });
 
   it('no precipitation: no umbrella talk', () => {
     const r = getOutfitRecommendation(weather({ temp_c: 12, condition: { text: 'Overcast' } }));
-    expect(r.description).not.toContain('umbrella');
+    assert.ok(!(r.description).includes('umbrella'));
   });
 });
 
 describe('getOutfitRecommendation — wind', () => {
   it('over 20 kph stacks the wind suffix on the summary and emoji', () => {
     const r = getOutfitRecommendation(weather({ temp_c: 18, wind_kph: 30 }));
-    expect(r.conditionSummary).toBe('Mild and Windy');
-    expect(r.emoji).toContain('💨');
+    assert.equal(r.conditionSummary, 'Mild and Windy');
+    assert.ok((r.emoji).includes('💨'));
   });
 
   it('at or under 20 kph there is no wind suffix', () => {
-    expect(getOutfitRecommendation(weather({ wind_kph: 20 })).conditionSummary).toBe('Mild');
-    expect(getOutfitRecommendation(weather({ wind_kph: 19.9 })).conditionSummary).toBe('Mild');
+    assert.equal(getOutfitRecommendation(weather({ wind_kph: 20 })).conditionSummary, 'Mild');
+    assert.equal(getOutfitRecommendation(weather({ wind_kph: 19.9 })).conditionSummary, 'Mild');
   });
 
   it('rain + wind compose: umbrella advice AND windy summary', () => {
     const r = getOutfitRecommendation(weather({ temp_c: 12, precip_mm: 2, wind_kph: 28, condition: { text: 'Rain' } }));
-    expect(r.conditionSummary).toBe('Rainy and Windy');
-    expect(r.description).toContain('umbrella');
+    assert.equal(r.conditionSummary, 'Rainy and Windy');
+    assert.ok((r.description).includes('umbrella'));
   });
 });
 
@@ -88,8 +88,8 @@ describe('getOutfitRecommendation — custom rules', () => {
     const r = getOutfitRecommendation(weather({ temp_c: 22 }), [
       { id: 'r1', name: 'Laundry day', minTemp: 15, maxTemp: 30, emoji: '🧺', description: 'Wear the laundry pile.' },
     ]);
-    expect(r.emoji).toBe('🧺');
-    expect(r.conditionSummary).toBe('Laundry day');
+    assert.equal(r.emoji, '🧺');
+    assert.equal(r.conditionSummary, 'Laundry day');
   });
 
   it('condition fields are wildcards when undefined; set fields must match', () => {
@@ -98,11 +98,11 @@ describe('getOutfitRecommendation — custom rules', () => {
     const matched = getOutfitRecommendation(rain, [
       { id: 'r2', name: 'Rain dance', isRaining: true, emoji: '🕺', description: 'Dance in it.' },
     ]);
-    expect(matched.conditionSummary).toBe('Rain dance');
+    assert.equal(matched.conditionSummary, 'Rain dance');
     // isRaining: false must NOT apply while raining -> default rainy advice.
     const unmatched = getOutfitRecommendation(rain, [
       { id: 'r3', name: 'Sun hat', isRaining: false, emoji: '👒', description: 'Sun hat time.' },
     ]);
-    expect(unmatched.conditionSummary).toBe('Rainy');
+    assert.equal(unmatched.conditionSummary, 'Rainy');
   });
 });
