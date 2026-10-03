@@ -1,0 +1,84 @@
+
+/* Wardrobe atelier: warm editorial cards against a moving weather stage. */
+.ow-atelier-page{--atelier-accent:#becdb1;--atelier-ink:#27392e;--atelier-paper:#fbf7ee;}
+.ow-atelier-page[data-for-her="true"]{--atelier-accent:#edb8a8;--atelier-ink:#46302c;}
+.ow-atelier-page .ow-shell{max-width:1440px;padding-top:2rem;}
+.ow-atelier-page .ow-dashboard{align-items:start;grid-template-columns:.85fr 1.15fr;gap:clamp(2rem,5vw,5rem);}
+.ow-atelier-page .ow-dashboard>div:first-child{padding-top:3rem;position:sticky;top:2rem;}
+.ow-atelier-page .ow-hero-title{font-size:clamp(4.1rem,6.5vw,7rem);font-weight:500;line-height:.98;letter-spacing:-.06em;}
+.ow-atelier-page .ow-hero-title em{color:#f5dfbf;}
+.ow-atelier-page .ow-intro{max-width:28rem;font-size:1rem;}
+.ow-atelier-page .ow-kicker{background:none;border:0;padding:0;letter-spacing:.2em;font-size:.65rem;color:#f5dfbf;}
+.atelier-top-controls{display:flex;align-items:center;gap:.65rem;}
+.atelier-her-toggle{display:flex;align-items:center;gap:.85rem;background:var(--atelier-paper);color:var(--atelier-ink);padding:.55rem .8rem .55rem 1rem;border-radius:999px;font-size:.8rem;font-weight:750;min-height:42px;box-shadow:0 8px 22px #07152724;}
+.atelier-switch-track{width:38px;height:22px;padding:3px;background:#d8dbd3;border-radius:999px;transition:background .3s;}
+.atelier-switch-track i{display:block;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0002;transition:transform .3s cubic-bezier(.2,.9,.3,1);}
+.atelier-her-toggle[aria-checked="true"] .atelier-switch-track{background:#b56e58;}
+.atelier-her-toggle[aria-checked="true"] .atelier-switch-track i{transform:translateX(16px);}
+.atelier,.atelier-empty{color:var(--atelier-ink);background:var(--atelier-paper);border:1px solid #ffffff90;border-radius:28px;padding:clamp(1.2rem,2.6vw,2rem);box-shadow:0 30px 90px #05182b38;position:relative;overflow:hidden;transition:color .4s,background .4s;animation:atelier-arrive .6s cubic-bezier(.2,.8,.2,1) both;}
+.atelier-heading{display:flex;justify-content:space-between;align-items:start;gap:1rem;}
+.atelier-label{font-size:.56rem;letter-spacing:.2em;font-weight:850;color:#6c7569;}
+.atelier-heading h2{font-size:clamp(1.9rem,3vw,2.7rem);font-weight:500;line-height:1.1;margin-top:.5rem;letter-spacing:-.045em;}
+.atelier-edition{font-size:.55rem;letter-spacing:.12em;writing-mode:vertical-rl;white-space:nowrap;color:#84897a;}
+.atelier-occasions{display:flex;gap:.4rem;margin:1.4rem 0 1rem;padding:.3rem;background:#ebe9df;border-radius:14px;}
+.atelier-occasions button{display:flex;align-items:center;justify-content:center;gap:.4rem;flex:1;padding:.6rem .3rem;border-radius:11px;font-size:.72rem;color:#6c7365;transition:background .25s,box-shadow .25s,transform .25s;}
+.atelier-occasions button.selected{background:var(--atelier-paper);box-shadow:0 3px 8px #25362912;color:var(--atelier-ink);}
+.atelier-occasions button:hover{transform:translateY(-1px);}
+.atelier-preference{display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:.7rem;margin:.4rem 0 1.1rem;color:#747665;}
+.atelier-preference>div{display:flex;gap:.4rem;}
+.atelier-preference button{border:1px solid #d6d8cb;padding:.4rem .6rem;border-radius:999px;color:var(--atelier-ink);}
+.atelier-preference button.selected{background:var(--atelier-accent);border-color:transparent;}
+.atelier-board{display:grid;grid-template-columns:.9fr 1.1fr;gap:1.1rem;align-items:stretch;animation:atelier-arrive .4s ease both;}
+.atelier-art{position:relative;display:flex;align-items:center;flex-direction:column;justify-content:center;border-radius:18px;background:linear-gradient(145deg,#eae9dc,#f0e9dc);padding:.8rem .5rem 1rem;min-height:280px;}
+.atelier-art-tag{align-self:start;padding-left:.6rem;font-size:.52rem;letter-spacing:.18em;color:#737c6c;font-weight:800;}
+.atelier-garments{width:100%;max-width:220px;height:260px;overflow:visible;}
+.atelier-garment-top{transform-origin:120px 120px;animation:atelier-float 7s ease-in-out infinite;}
+.atelier-garment-layer{transform-origin:70px 150px;animation:atelier-float 8s -3s ease-in-out infinite reverse;}
+.atelier-garment-shoes{transform-origin:180px 260px;animation:atelier-float 9s -4s ease-in-out infinite;}
+.atelier-swatches{display:flex;gap:6px;}
+.atelier-swatches i{width:15px;height:15px;border:2px solid #ffffffd9;border-radius:50%;box-shadow:0 1px 2px #0001;}
+.atelier-art-caption{font-size:.52rem;margin-top:.6rem;color:#74796d;}
+.atelier-pieces{display:flex;flex-direction:column;justify-content:center;gap:.55rem;}
+.atelier-piece{display:flex;align-items:center;gap:.7rem;padding:.7rem .5rem;border-bottom:1px solid #dfe1d7;animation:atelier-arrive .45s ease both;}
+.atelier-piece:last-child{border-bottom:0;}
+.atelier-piece-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;flex:none;background:#e8eadd;color:#5c6a56;}
+.atelier-piece small{display:block;color:#848978;font-size:.5rem;font-weight:800;letter-spacing:.16em;margin-bottom:.22rem;}
+.atelier-piece strong{display:block;font-size:.76rem;line-height:1.35;font-weight:650;}
+.atelier-caption{padding-top:1.2rem;margin-top:1.2rem;border-top:1px solid #d8ddce;}
+.atelier-caption h3{font-size:1.7rem;font-weight:500;letter-spacing:-.035em;}
+.atelier-caption p{font-size:.75rem;line-height:1.65;color:#707768;margin-top:.45rem;}
+.atelier-caption .atelier-weather-rule{font-size:.68rem;color:#747a6f;border-left:2px solid var(--atelier-accent);padding-left:.65rem;margin-top:.8rem;}
+.atelier-actions{display:flex;justify-content:space-between;gap:.7rem;margin-top:1.2rem;}
+.atelier-actions button,.atelier-empty>button{display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:43px;padding:.65rem .9rem;border-radius:13px;font-size:.72rem;font-weight:700;transition:transform .2s,box-shadow .2s;}
+.atelier-shuffle{border:1px solid #d7dcd0;}
+.atelier-save{background:var(--atelier-ink);color:#fcf8ed;}
+.atelier-actions button:hover,.atelier-empty>button:hover{transform:translateY(-2px);box-shadow:0 7px 18px #28352b18;}
+.atelier-status{min-height:1rem;font-size:.7rem;color:#546750;margin-top:.7rem;}
+.atelier-empty{min-height:510px;display:flex;align-items:start;flex-direction:column;justify-content:center;}
+.atelier-empty-art{position:relative;align-self:center;width:210px;height:235px;margin:1rem 0;}
+.atelier-empty-art svg{width:100%;height:100%;animation:atelier-float 7s ease-in-out infinite;}
+.atelier-empty-art>span{position:absolute;right:0;top:12px;font-size:2rem;color:#a68260;animation:atelier-orbit 15s linear infinite;}
+.atelier-empty-art>i{display:block;font-size:.5rem;letter-spacing:.2em;color:#7c8371;text-align:center;font-style:normal;}
+.atelier-empty h2{font-size:2.3rem;font-weight:500;letter-spacing:-.035em;line-height:1.15;}
+.atelier-empty>p{font-size:.85rem;line-height:1.7;color:#6e7568;margin:.8rem 0 1.3rem;}
+.atelier-weather-details{border:1px solid #ffffff40;border-radius:20px;background:#101e3040;margin-top:2.5rem;overflow:hidden;backdrop-filter:blur(18px);}
+.atelier-weather-details summary{display:flex;align-items:center;gap:1rem;list-style:none;cursor:pointer;padding:1.15rem 1.4rem;font-family:var(--font-display),serif;font-size:1.3rem;}
+.atelier-weather-details summary::-webkit-details-marker{display:none;}
+.atelier-weather-details summary>span{margin-left:auto;font-family:var(--font-body),sans-serif;font-size:.7rem;color:#ffffffa0;}
+.atelier-weather-details summary>b{font-size:1.25rem;transition:transform .25s;}
+.atelier-weather-details[open] summary>b{transform:rotate(45deg);}
+.atelier-weather-details .ow-weather-card{box-shadow:none;border:0;border-radius:0;background:transparent;max-width:none;}
+.ow-atelier-page .ow-scene-grid{display:flex;overflow-x:auto;padding:4px 4px 14px;scroll-snap-type:x mandatory;}
+.ow-atelier-page .ow-scene-chip{min-width:210px;flex:0 0 210px;scroll-snap-align:start;}
+.ow-atelier-page .ow-scene-section{margin-top:3rem;}
+.ow-atelier-page :is(button,summary):focus-visible{outline:2px solid #d09478;outline-offset:4px;}
+.ow-atelier-page[data-motion="off"] *{animation:none!important;transition:none!important;}
+@keyframes atelier-arrive{from{opacity:0;transform:translateY(15px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes atelier-float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(1deg)}}
+@keyframes atelier-orbit{to{transform:rotate(360deg)}}
+@supports(animation-timeline:view()){
+.ow-atelier-page .ow-gallery{animation:atelier-arrive linear both;animation-timeline:view();animation-range:entry 0% entry 20%;}
+}
+@media(max-width:1023px){.ow-atelier-page .ow-dashboard{grid-template-columns:1fr;gap:2rem;}.ow-atelier-page .ow-dashboard>div:first-child{position:static;padding-top:0;}.ow-atelier-page .ow-hero-title{font-size:clamp(3.8rem,9vw,6.5rem);max-width:none;}.atelier-empty{min-height:400px;}}
+@media(max-width:600px){.ow-atelier-page .ow-topbar{gap:.6rem;align-items:start;}.ow-atelier-page .ow-page-status-location{display:none;}.ow-atelier-page .ow-page-status{font-size:.48rem;padding:.5rem;letter-spacing:.08em;}.atelier-top-controls{flex-direction:column-reverse;align-items:end;}.atelier-top-controls .ow-utility{min-height:30px;font-size:.6rem;padding:.3rem .6rem;}.atelier-her-toggle{font-size:.75rem;min-height:38px;}.atelier-board{gap:.65rem;grid-template-columns:.85fr 1.15fr;}.atelier-art{min-height:230px;}.atelier-garments{height:210px;}.atelier-piece{padding:.55rem 0;gap:.45rem;}.atelier-piece-icon{width:27px;height:27px;border-radius:9px;}.atelier-piece strong{font-size:.7rem;}.atelier-actions button{font-size:.65rem;padding:.65rem;}.atelier-weather-details summary{font-size:1.1rem;padding:1rem;}.atelier-weather-details summary>span{display:none;}.atelier-weather-details summary>b{margin-left:auto;}}
+@media(prefers-reduced-motion:reduce){.ow-atelier-page *{animation:none!important;transition:none!important;}.ow-atelier-page .atelier-actions button:hover{transform:none;}}
