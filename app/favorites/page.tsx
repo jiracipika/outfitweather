@@ -1,22 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import FavoriteOutfits from "@/components/favorite-outfits"
-import { FavoritesSkeleton } from "@/components/loading-skeleton"
+import Link from "next/link"
 
 export default function FavoritesPage() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    // Simulate loading for 500ms to show skeleton
-    const timer = setTimeout(() => setIsLoading(false), 500)
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
-    <div className="flex flex-col items-center justify-center p-4 md:p-6 w-full">
-      <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 animate-fade-in">Your Favorite Outfits</h1>
-      {isLoading ? <FavoritesSkeleton /> : <FavoriteOutfits />}
+    <div className="atelier-favorites-page">
+      <div className="atelier-favorites-heading"><div><span className="ow-eyebrow">A WARDROBE WORTH KEEPING</span><h1 className="ow-display">The saved edit.</h1><p>Your favourite looks, ready for another day.</p></div><Link href="/" className="ow-return">Build another look ↗</Link></div>
+      <FavoriteOutfits />
     </div>
   )
 }

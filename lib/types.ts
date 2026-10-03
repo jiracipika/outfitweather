@@ -47,6 +47,8 @@ export interface OutfitRecommendation {
   conditionSummary: string // e.g., "Mild and Sunny", "Cold and Rainy"
   temperature: number
   location: string
+  styledLook?: import("./outfit-styling").StyledLook
+  forHer?: boolean
 }
 
 export interface CustomOutfitRule {

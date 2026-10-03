@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import type { OutfitRecommendation } from "@/lib/types"
 import { getSavedOutfits, removeOutfitFromLocalStorage } from "@/lib/local-storage-utils"
 import OutfitCard from "./outfit-card"
-import { Frown } from "lucide-react"
+import { Heart } from "lucide-react"
+import Link from "next/link"
 
 export default function FavoriteOutfits() {
   const [favorites, setFavorites] = useState<OutfitRecommendation[]>([])
@@ -21,10 +22,11 @@ export default function FavoriteOutfits() {
 
   if (favorites.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-muted-foreground animate-fade-in">
-        <Frown className="w-16 h-16 mb-4" />
-        <p className="text-xl">No favorite outfits saved yet.</p>
-        <p className="text-sm">Search for a city and save your favorite recommendations!</p>
+      <div className="atelier-favorites-empty">
+        <Heart size={40} strokeWidth={1} />
+        <h2 className="ow-display">Your next favourite is out there.</h2>
+        <p>Save a look from your forecast and find it here.</p>
+        <Link href="/" className="ow-return">Find my outfit ↗</Link>
       </div>
     )
   }

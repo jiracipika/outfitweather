@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { CloudOff, LocateFixed, Sparkles } from "lucide-react"
+import { CloudOff, LocateFixed, Sparkles, Sun, Moon, Cloud, CloudRain, CloudLightning, Snowflake, Haze, Wind, ThermometerSun } from "lucide-react"
 import SearchBar from "@/components/search-bar"
 import WeatherDisplay from "@/components/weather-display"
 import OutfitStudio from "@/components/outfit-studio"
+import WardrobeArt from "@/components/wardrobe-art"
+import { buildStyledLook } from "@/lib/outfit-styling"
+import { useWardrobePreferences } from "@/components/wardrobe-preferences"
 import WeatherScenery from "@/components/weather-scenery"
 import ForecastStrip from "@/components/forecast-strip"
 import { WeatherSkeleton } from "@/components/loading-skeleton"
@@ -14,9 +17,9 @@ import { getOutfitRecommendation } from "@/lib/weather-utils"
 import { getCustomOutfitRules } from "@/lib/local-storage-utils"
 import { DEMO_SCENE_KEYS, buildDemoWeather, getWeatherScene, type SceneKey } from "@/lib/weather-scene"
 
-const SCENE_EMOJI: Record<SceneKey, string> = {
-  "clear-day": "☀️", "clear-night": "🌙", cloudy: "☁️", rain: "🌧️",
-  thunder: "⛈️", snow: "❄️", fog: "🌫️", wind: "🍃", heat: "🔥",
+const SCENE_ICONS = {
+  "clear-day": Sun, "clear-night": Moon, cloudy: Cloud, rain: CloudRain,
+  thunder: CloudLightning, snow: Snowflake, fog: Haze, wind: Wind, heat: ThermometerSun,
 }
 const SHEEP_MOODS = ["Baa!", "The sheep approve of this forecast.", "One sheep looked up. Briefly.", "Sheep lore unlocked: they judge your outfit."]
 const SCENE_CUE: Record<SceneKey, string> = {
@@ -37,8 +40,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [unit, setUnit] = useState<"C" | "F">("C")
-  const [motion, setMotion] = useState(true)
-  const [forHer, setForHer] = useState(false)
+  const { motion, forHer } = useWardrobePreferences()
   const [parallax, setParallax] = useState({ x: 0, y: 0 })
   const [sheepPetted, setSheepPetted] = useState(0)
   const [sheepMood, setSheepMood] = useState<string | null>(null)
@@ -64,13 +66,12 @@ export default function HomePage() {
       })
     }
     window.addEventListener("pointermove", onMove, { passive: true })
-    return () => { window.removeEventListener("pointermove", onMove); cancelAnimationFrame(pointerFrame.current) }
+    return () => { window.removeEventListener("pointermove", onMove); cancelAnimationFrame(pointerFrame.current); pointerFrame.current = 0 }
   }, [motion])
 
   useEffect(() => () => requestRef.current?.abort(), [])
   useEffect(() => {
     try { setLastCity(window.localStorage.getItem("ow:last-city")) } catch { /* private browsing */ }
-    try { setForHer(window.localStorage.getItem("ow:for-her") === "true") } catch { /* Storage is optional. */ }
     setCustomRules(getCustomOutfitRules())
   }, [])
 
@@ -116,12 +117,6 @@ export default function HomePage() {
     setPreview(key)
   }
 
-  const toggleForHer = () => {
-    const next = !forHer
-    setForHer(next)
-    try { window.localStorage.setItem("ow:for-her", String(next)) } catch { /* Keep this choice in memory. */ }
-  }
-
   const petSheep = () => {
     setSheepPetted((n) => n + 1)
     setSheepMood(SHEEP_MOODS[Math.floor(Math.random() * SHEEP_MOODS.length)])
@@ -138,16 +133,13 @@ export default function HomePage() {
             <span>{preview ? "SCENE PREVIEW" : weatherData ? "LIVE WEATHER" : "YOUR DAILY WEATHER BRIEF"}</span>
             {sceneWeather && <span className="ow-page-status-location">{sceneWeather.location.name}</span>}
           </div>
-          <div className="atelier-top-controls">
-            <button type="button" onClick={() => setMotion(value => !value)} className="ow-utility" aria-pressed={motion} aria-label={motion ? "Turn off animations and movement" : "Turn on animations and movement"}><Sparkles size={16} /><span>Motion {motion ? "on" : "off"}</span></button>
-            <button type="button" role="switch" aria-checked={forHer} onClick={toggleForHer} className="atelier-her-toggle"><span>For her</span><span className="atelier-switch-track" aria-hidden="true"><i /></span></button>
-          </div>
+          <a className="atelier-sky-link" href="#sky-gallery">Explore the skies <span aria-hidden="true">↘</span></a>
         </div>
 
         <section className="ow-dashboard grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div className="max-w-2xl">
             <div className="ow-kicker mb-6 inline-flex items-center gap-2"><Sparkles size={14} /> THE DAILY WARDROBE EDIT</div>
-            <h1 className="ow-display ow-hero-title">A forecast.<br /><em>A whole look.</em></h1>
+            <h1 className="ow-display ow-hero-title">{forHer ? "Her forecast." : "A forecast."}<br /><em>A whole look.</em><span className="atelier-hero-star" aria-hidden="true">✳</span></h1>
             <p className="ow-intro mt-6 max-w-lg">A little weather wisdom. A look that feels like you. Pick your city, choose your plans, and leave the outfit to us.</p>
             <div className="mt-9 flex max-w-xl flex-col gap-3 sm:flex-row">
               <SearchBar onSearch={fetchWeather} isLoading={loading} />
@@ -160,11 +152,11 @@ export default function HomePage() {
 
           <div className="ow-feature relative">
             {loading && !sceneWeather ? <WeatherSkeleton /> : sceneWeather && recommendation ? (
-              <OutfitStudio weather={sceneWeather} base={recommendation} forHer={forHer} demo={Boolean(preview)} />
+              <OutfitStudio weather={sceneWeather} base={recommendation} forHer={forHer} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} isRefreshing={loading} onRefresh={!preview && currentQuery ? () => void fetchWeather(currentQuery) : undefined} />
             ) : (
               <div className="atelier-empty">
                 <span className="atelier-label">YOUR OUTFIT STARTS HERE</span>
-                <div className="atelier-empty-art" aria-hidden="true"><span>✦</span><ShirtOutline /><i>01 / THE DAILY EDIT</i></div>
+                <div className="atelier-empty-art" aria-hidden="true"><span>✦</span><WardrobeArt look={buildStyledLook(buildDemoWeather("clear-day"), forHer, "casual", forHer ? "dress" : "trousers")} /><i>01 / THE DAILY EDIT</i></div>
                 <h2 className="ow-display">{forHer ? "Made for her kind of day." : "Good weather. Better layers."}</h2>
                 <p>Find your forecast to build a complete look. Or take the wardrobe for a spin with sample weather.</p>
                 <button type="button" onClick={() => choosePreview("clear-day")} className="atelier-save">Try a sunny-day look <span aria-hidden="true">↗</span></button>
@@ -176,7 +168,7 @@ export default function HomePage() {
         {sceneWeather && recommendation && <details className="atelier-weather-details"><summary>Behind the look <span>{sceneWeather.location.name} · {sceneWeather.current.condition.text}</span><b aria-hidden="true">+</b></summary><WeatherDisplay weather={sceneWeather} outfit={recommendation} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} isRefreshing={loading} onRefresh={!preview && currentQuery ? () => void fetchWeather(currentQuery) : undefined} /></details>}
         {sceneWeather && <div className="mt-12"><ForecastStrip weather={sceneWeather} unit={unit} /></div>}
 
-        <section className="ow-gallery ow-scene-section mt-14" aria-label="Weather scene previews">
+        <section id="sky-gallery" className="ow-gallery ow-scene-section mt-14" aria-label="Weather scene previews">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div><div className="ow-eyebrow mb-2">INTERACTIVE SKY GALLERY</div><h2 className="ow-display text-2xl sm:text-3xl">Try a different forecast</h2></div>
             {preview && weatherData && <button type="button" className="ow-return" onClick={() => setPreview(null)}>↩ Back to live weather</button>}
@@ -184,8 +176,9 @@ export default function HomePage() {
           <div className="ow-scene-grid">
             {DEMO_SCENE_KEYS.map((key) => {
               const active = preview === key
+              const Icon = SCENE_ICONS[key]
               return <button key={key} type="button" onClick={() => choosePreview(key)} aria-pressed={active} className={`ow-scene-chip ${active ? "is-active" : ""}`}>
-                <span aria-hidden="true" className="ow-scene-emoji">{SCENE_EMOJI[key]}</span>
+                <span aria-hidden="true" className="ow-scene-emoji"><Icon size={23} strokeWidth={1.5} /></span>
                 <span className="ow-scene-copy"><strong>{getWeatherScene(buildDemoWeather(key)).label}</strong><small>{SCENE_CUE[key]}</small></span>
                 <span aria-hidden="true" className="ow-scene-arrow">↗</span>
               </button>
@@ -203,8 +196,4 @@ function sheepForWeather(w: WeatherData): number {
   if (w.current.temp_c <= -5 || w.current.temp_c >= 32) return 1
   if (w.current.wind_kph > 40) return 2
   return 4
-}
-
-function ShirtOutline() {
-  return <svg viewBox="0 0 180 180"><path d="M57 35 72 27 Q90 43 108 27 L123 35 157 68 133 88 117 71V150H63V71L47 88 23 68Z" fill="#c0c9b7" stroke="#34453c" strokeWidth="1.5" /><path d="M75 31Q90 58 105 31M70 136H110" fill="none" stroke="#34453c" opacity=".4" /></svg>
 }

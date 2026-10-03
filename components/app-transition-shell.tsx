@@ -3,14 +3,16 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSwipeNav } from '@/hooks/use-swipe-nav';
+import { useWardrobePreferences } from './wardrobe-preferences';
 
 const SWIPE_ROUTES = ["/", "/favorites", "/customize"];
 
 export default function AppTransitionShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { motion } = useWardrobePreferences();
   const { dragOffset, dragOpacity, canSwipe } = useSwipeNav({
     routes: SWIPE_ROUTES,
-    enabled: SWIPE_ROUTES.some((r) => pathname.startsWith(r)),
+    enabled: motion && !reducedMotionPreference() && SWIPE_ROUTES.some((r) => pathname.startsWith(r)),
   });
 
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -38,7 +40,7 @@ export default function AppTransitionShell({ children }: { children: React.React
     transition: dragOffset !== 0 ? 'none' : 'opacity 0.38s cubic-bezier(0.22,1,0.36,1)',
   };
 
-  const enterClass = !reducedMotion && currentIndex >= 0 && direction !== 0
+  const enterClass = motion && !reducedMotion && currentIndex >= 0 && direction !== 0
     ? direction > 0 ? 'outfitweather-enter-right' : 'outfitweather-enter-left' : '';
 
   return (
@@ -46,4 +48,8 @@ export default function AppTransitionShell({ children }: { children: React.React
       {children}
     </div>
   );
+}
+
+function reducedMotionPreference() {
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
