@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter, Fraunces } from "next/font/google"
 import "./globals.css"
 import "./studio.css"
+import "./her.css"
 import Navbar from "@/components/navbar"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
@@ -32,8 +33,7 @@ export default function RootLayout({
             <main className="flex flex-1 flex-col items-center justify-center p-0 md:p-0">
               <AppTransitionShell>{children}</AppTransitionShell>
             </main>
-          </div></WardrobePreferences>
-          <Toaster />
+          </div><Toaster /></WardrobePreferences>
         </ThemeProvider>
       </body>
     </html>

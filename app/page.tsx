@@ -9,6 +9,7 @@ import OutfitStudio from "@/components/outfit-studio"
 import WardrobeArt from "@/components/wardrobe-art"
 import { buildStyledLook } from "@/lib/outfit-styling"
 import { useWardrobePreferences } from "@/components/wardrobe-preferences"
+import HerDashboard from "@/components/her-dashboard"
 import WeatherScenery from "@/components/weather-scenery"
 import ForecastStrip from "@/components/forecast-strip"
 import { WeatherSkeleton } from "@/components/loading-skeleton"
@@ -55,7 +56,7 @@ export default function HomePage() {
   }, [sceneWeather, customRules])
 
   useEffect(() => {
-    if (!motion || window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches) { setParallax({ x: 0, y: 0 }); return }
+    if (forHer || !motion || window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches) { setParallax({ x: 0, y: 0 }); return }
     const onMove = (e: PointerEvent) => {
       if (pointerFrame.current) return
       const x = (e.clientX / window.innerWidth) * 2 - 1
@@ -67,7 +68,7 @@ export default function HomePage() {
     }
     window.addEventListener("pointermove", onMove, { passive: true })
     return () => { window.removeEventListener("pointermove", onMove); cancelAnimationFrame(pointerFrame.current); pointerFrame.current = 0 }
-  }, [motion])
+  }, [motion, forHer])
 
   useEffect(() => () => requestRef.current?.abort(), [])
   useEffect(() => {
@@ -121,6 +122,8 @@ export default function HomePage() {
     setSheepPetted((n) => n + 1)
     setSheepMood(SHEEP_MOODS[Math.floor(Math.random() * SHEEP_MOODS.length)])
   }
+
+  if (forHer) return <HerDashboard weather={sceneWeather} recommendation={recommendation} preview={preview} hasLiveWeather={Boolean(weatherData)} loading={loading} error={error} lastCity={lastCity} unit={unit} onUnitChange={setUnit} onSearch={fetchWeather} onLocation={useLocation} onPreview={choosePreview} onReturnToLive={() => setPreview(null)} onRefresh={!preview && currentQuery ? () => void fetchWeather(currentQuery) : undefined} />
 
   return (
     <div className="ow-page ow-atelier-page relative min-h-[calc(100vh-4rem)] w-full overflow-hidden" data-for-her={forHer ? "true" : "false"} data-motion={motion ? "on" : "off"} style={{ background: scene.gradient }}>
