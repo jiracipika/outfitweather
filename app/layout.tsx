@@ -1,8 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Fraunces } from "next/font/google"
+import { Inter, Fraunces, Cormorant_Garamond, UnifrakturCook } from "next/font/google"
 import "./globals.css"
 import "./studio.css"
+import "./her.css"
 import Navbar from "@/components/navbar"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
@@ -11,6 +12,8 @@ import { WardrobePreferences } from "@/components/wardrobe-preferences"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display" })
+const herSerif = Cormorant_Garamond({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"], variable: "--font-her-serif" })
+const herGothic = UnifrakturCook({ subsets: ["latin"], weight: "700", variable: "--font-her-gothic" })
 
 export const metadata: Metadata = {
   title: "outfitweather",
@@ -24,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${display.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${display.variable} ${herSerif.variable} ${herGothic.variable}`}>
       <body style={{ fontFamily: "var(--font-body), system-ui, sans-serif" }}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <WardrobePreferences><div className="flex min-h-screen flex-col">
@@ -32,8 +35,7 @@ export default function RootLayout({
             <main className="flex flex-1 flex-col items-center justify-center p-0 md:p-0">
               <AppTransitionShell>{children}</AppTransitionShell>
             </main>
-          </div></WardrobePreferences>
-          <Toaster />
+          </div><Toaster /></WardrobePreferences>
         </ThemeProvider>
       </body>
     </html>

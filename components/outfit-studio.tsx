@@ -6,12 +6,14 @@ import type { WeatherData, OutfitRecommendation } from "@/lib/types"
 import { buildStyledLook, LOOK_PALETTES, type Occasion, type Silhouette, type Comfort, type Palette, type OutfitPiece } from "@/lib/outfit-styling"
 import { saveOutfitToLocalStorage } from "@/lib/local-storage-utils"
 import WardrobeArt from "./wardrobe-art"
+import HerOutfitView from "./her-outfit-view"
 
 const occasions = [{ key: "casual", label: "Everyday", icon: Coffee }, { key: "work", label: "Work", icon: Briefcase }, { key: "evening", label: "Evening", icon: Moon }] as const
 const PREF_KEY = "ow:style-preferences"
 type Preferences = { occasion: Occasion; silhouette: Silhouette; comfort: Comfort; palette: Palette }
 const defaults: Preferences = { occasion: "casual", silhouette: "auto", comfort: "forecast", palette: "earth" }
 function readPreferences(forHer: boolean): Preferences {
+  const wardrobeDefaults = forHer ? { ...defaults, palette: "cherry" as Palette } : defaults
   try {
     const stored = JSON.parse(localStorage.getItem(PREF_KEY) ?? "{}")
     // Preserve the original preference format while giving each wardrobe its own choices.
@@ -20,9 +22,9 @@ function readPreferences(forHer: boolean): Preferences {
       occasion: ["casual", "work", "evening"].includes(saved.occasion) ? saved.occasion : defaults.occasion,
       silhouette: ["auto", "trousers", "dress"].includes(saved.silhouette) ? saved.silhouette : defaults.silhouette,
       comfort: ["cold", "forecast", "warm"].includes(saved.comfort) ? saved.comfort : defaults.comfort,
-      palette: Object.hasOwn(LOOK_PALETTES, saved.palette ?? "") ? saved.palette : defaults.palette,
+      palette: Object.hasOwn(LOOK_PALETTES, saved.palette ?? "") ? saved.palette : wardrobeDefaults.palette,
     }
-  } catch { return defaults }
+  } catch { return wardrobeDefaults }
 }
 
 function OutfitStudio({ weather, base, forHer, demo, unit, onUnitChange, isRefreshing, onRefresh }: { weather: WeatherData; base: OutfitRecommendation; forHer: boolean; demo: boolean; unit: "C" | "F"; onUnitChange: (unit: "C" | "F") => void; isRefreshing: boolean; onRefresh?: () => void }) {
@@ -51,6 +53,7 @@ function OutfitStudio({ weather, base, forHer, demo, unit, onUnitChange, isRefre
     setMessage(result === "saved" ? "Your look is saved in Favorites." : result === "duplicate" ? "This look is already in Favorites." : "Couldn’t save this look. Browser storage may be unavailable.")
   }
   const showTemp = (c: number) => Math.round(unit === "C" ? c : c * 9 / 5 + 32)
+  if (forHer) return <HerOutfitView weather={weather} base={base} demo={demo} unit={unit} onUnitChange={onUnitChange} isRefreshing={isRefreshing} onRefresh={onRefresh} look={look} preferences={preferences} variation={variation} active={active} onHighlight={setActive} onPreferenceChange={remember} onShuffle={() => setVariation(value => (value + 1) % 6)} onSave={save} message={message} />
   return <article className="atelier" aria-label="Build your weather-ready outfit" aria-busy={isRefreshing}>
     <div className="atelier-weather-brief"><div><span className="atelier-label">{demo ? "SAMPLE FORECAST" : "LIVE FORECAST"}</span><span className="atelier-city"><MapPin size={12} />{weather.location.name}</span></div><div className="atelier-temperature"><strong>{showTemp(weather.current.temp_c)}°</strong><button type="button" onClick={() => onUnitChange(unit === "C" ? "F" : "C")} aria-label={`Switch to ${unit === "C" ? "Fahrenheit" : "Celsius"}`}>°{unit}</button>{onRefresh && <button type="button" disabled={isRefreshing} onClick={onRefresh} aria-label="Refresh weather"><RefreshCw size={15} className={isRefreshing ? "animate-spin" : ""} /></button>}</div></div>
     <header className="atelier-heading"><div><span className="atelier-label">THE WEATHER-READY WARDROBE</span><h2 className="ow-display">{forHer ? "Her outfit, sorted." : "Your outfit, sorted."}</h2></div><span className="atelier-edition">01 / DAILY EDIT</span></header>

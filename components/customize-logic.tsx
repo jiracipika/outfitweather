@@ -11,10 +11,12 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { PlusCircle, Save, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useWardrobePreferences } from "./wardrobe-preferences"
 
 export default function CustomizeLogic() {
   const [rules, setRules] = useState<CustomOutfitRule[]>([])
   const { toast } = useToast()
+  const { forHer } = useWardrobePreferences()
 
   useEffect(() => {
     setRules(getCustomOutfitRules())
@@ -43,9 +45,9 @@ export default function CustomizeLogic() {
   const handleSave = () => {
     const saved = saveCustomOutfitRules(rules)
     toast({
-      title: saved ? "Custom rules saved!" : "Could not save custom rules",
+      title: saved ? (forHer ? "Wardrobe notes saved" : "Custom rules saved!") : "Could not save custom rules",
       description: saved
-        ? "Your outfit recommendations will now use your custom logic."
+        ? (forHer ? "Your weather notes are saved on this device." : "Your outfit recommendations will now use your custom logic.")
         : "Check your browser's storage settings and try again.",
       variant: saved ? "default" : "destructive",
     })
@@ -54,12 +56,12 @@ export default function CustomizeLogic() {
   return (
     <Card className="w-full max-w-4xl">
       <CardHeader>
-        <CardTitle>Customize Outfit Logic</CardTitle>
-        <CardDescription>Define your preferred outfits for different weather conditions.</CardDescription>
+        <CardTitle>{forHer ? "Your weather & wardrobe notes" : "Customize Outfit Logic"}</CardTitle>
+        <CardDescription>{forHer ? "Add your own clothing advice for warm, cold or rainy days." : "Define your preferred outfits for different weather conditions."}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {rules.length === 0 && (
-          <p className="text-center text-gray-500">No custom rules yet. Click "Add New Rule" to get started!</p>
+          <p className="text-center text-gray-500">{forHer ? "A favourite coat for rainy days? Add a note to make the forecast yours." : 'No custom rules yet. Click "Add New Rule" to get started!'}</p>
         )}
         {rules.map((rule) => (
           <div key={rule.id} className="border p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4 relative">
@@ -73,7 +75,7 @@ export default function CustomizeLogic() {
               <Trash2 className="h-4 w-4" />
             </Button>
             <div className="grid gap-2">
-              <Label htmlFor={`rule-name-${rule.id}`}>Rule Name</Label>
+              <Label htmlFor={`rule-name-${rule.id}`}>{forHer ? "Note name" : "Rule Name"}</Label>
               <Input
                 id={`rule-name-${rule.id}`}
                 value={rule.name}
@@ -139,7 +141,7 @@ export default function CustomizeLogic() {
               <Label htmlFor={`rule-windy-${rule.id}`}>Is Windy? (wind &gt; 20 kph)</Label>
             </div>
             <div className="grid gap-2 md:col-span-2">
-              <Label htmlFor={`rule-description-${rule.id}`}>Outfit Description</Label>
+              <Label htmlFor={`rule-description-${rule.id}`}>{forHer ? "What you’d like to wear" : "Outfit Description"}</Label>
               <Textarea
                 id={`rule-description-${rule.id}`}
                 value={rule.description}
@@ -151,10 +153,10 @@ export default function CustomizeLogic() {
         ))}
         <div className="flex justify-between gap-2">
           <Button variant="outline" onClick={addRule}>
-            <PlusCircle className="h-4 w-4 mr-2" /> Add New Rule
+            <PlusCircle className="h-4 w-4 mr-2" /> {forHer ? "Add a note" : "Add New Rule"}
           </Button>
           <Button onClick={handleSave}>
-            <Save className="h-4 w-4 mr-2" /> Save Custom Rules
+            <Save className="h-4 w-4 mr-2" /> {forHer ? "Save notes" : "Save Custom Rules"}
           </Button>
         </div>
       </CardContent>

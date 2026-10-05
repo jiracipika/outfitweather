@@ -1,0 +1,322 @@
+/* Her daily ritual: oxblood lettering, pastel paper, and romantic gothic details. */
+.wardrobe-app[data-for-her="true"] {
+  --her-red: #971f3b;
+  --her-ink: #61233a;
+  --her-muted: #795063;
+  --her-line: #c78497;
+  --her-cream: #fce7ed;
+  --her-blush: #f6d2df;
+  --her-pink: #edb8cc;
+  --her-lavender: #e3d3f2;
+  --her-mint: #d7ebe0;
+  --her-butter: #f8e5ba;
+  --atelier-ink: var(--her-ink);
+  --atelier-paper: var(--her-cream);
+  --atelier-accent: var(--her-pink);
+  --background: 343 78% 95%;
+  --foreground: 338 47% 26%;
+  --card: 339 67% 89%;
+  --card-foreground: 338 47% 26%;
+  --primary: 346 66% 36%;
+  --primary-foreground: 343 78% 95%;
+  --secondary: 275 54% 89%;
+  --secondary-foreground: 338 47% 26%;
+  --muted: 339 50% 89%;
+  --muted-foreground: 332 20% 39%;
+  --border: 343 37% 65%;
+  --input: 343 37% 65%;
+  --ring: 346 66% 36%;
+  background: var(--her-cream);
+  color: var(--her-ink);
+}
+.wardrobe-app[data-for-her="true"] .ow-nav {
+  background: #f6d2dff5;
+  border-color: var(--her-line);
+  color: var(--her-red);
+  box-shadow: 0 3px 15px #971f3b0a;
+}
+.wardrobe-app[data-for-her="true"] .ow-nav>a { color: var(--her-red); font-family: var(--font-her-gothic),Georgia,serif; font-size: 1.6rem; font-weight: 700; letter-spacing: 0; }
+.her-brand-heart { fill: var(--her-red); stroke-width: 1.5; }
+.her-brand-subtitle { display: block; font-family: var(--font-body),sans-serif; font-size: .48rem; letter-spacing: .23em; margin-top: .15rem; }
+.wardrobe-app[data-for-her="true"] .ow-nav-link { color: var(--her-muted); font-weight: 500; }
+.wardrobe-app[data-for-her="true"] .ow-nav-link.active,
+.wardrobe-app[data-for-her="true"] .ow-nav-link:hover { color: var(--her-red); background: var(--her-cream); }
+.wardrobe-app[data-for-her="true"] .atelier-motion { color: var(--her-red); }
+.wardrobe-app[data-for-her="true"] .atelier-her-toggle { background: var(--her-red); color: var(--her-cream); box-shadow: inset 0 0 0 3px #ffffff18; border: 1px solid var(--her-red); }
+.wardrobe-app[data-for-her="true"] .atelier-switch-track { background: #ffffff50; }
+.wardrobe-app[data-for-her="true"] :is(a,button,select,summary,input,textarea):focus-visible { outline: 2px solid var(--her-red); outline-offset: 4px; }
+.her-page { width: 100%; overflow: hidden; background: var(--her-cream); color: var(--her-ink); font-family: var(--font-body),sans-serif; }
+.her-page h1,.her-page h2,.her-page h3 { font-family: var(--font-her-serif),Georgia,serif; font-weight: 600; letter-spacing: -.025em; }
+.her-eyebrow { display: block; font-size: .62rem; letter-spacing: .15em; font-weight: 650; color: var(--her-red); }
+.her-hero { position: relative; isolation: isolate; background-color: var(--her-blush); background-image: radial-gradient(#971f3b18 .8px,transparent .8px); background-size: 18px 18px; padding: 3rem 1.5rem 2.8rem; border-bottom: 1px solid var(--her-red); }
+.her-hero::before { content: ""; position: absolute; inset: 18px; pointer-events: none; border: 1px solid var(--her-line); outline: 1px solid #c7849750; outline-offset: 5px; }
+.her-hero::after { content: ""; position: absolute; inset: auto 0 0; height: 12px; pointer-events: none; background: radial-gradient(circle at 50% 0,transparent 7px,var(--her-red) 7.5px 8px,transparent 8.5px) 0 0/18px 18px repeat-x; }
+.her-hero-content { position: relative; max-width: 680px; margin: 0 auto; text-align: center; z-index: 1; }
+.her-kicker { display: inline-flex; align-items: center; gap: .6rem; border-block: 1px solid var(--her-line); padding: .6rem .65rem; font-size: .58rem; letter-spacing: .17em; color: var(--her-red); }
+.her-hero h1 { font-family: var(--font-her-gothic),Georgia,serif; font-weight: 700; font-size: clamp(4rem,7.5vw,7.2rem); letter-spacing: -.035em; line-height: 1.05; margin-top: 1.3rem; color: var(--her-red); }
+.her-hero h1 span { white-space: nowrap; }
+.her-hero-content>p { color: var(--her-muted); font-size: .8rem; line-height: 1.8; margin-top: .8rem; }
+.her-hero-content>.her-hero-poem { font-family: var(--font-her-serif),Georgia,serif; font-style: italic; font-size: clamp(1.55rem,2.3vw,2.1rem); color: var(--her-red); line-height: 1.3; margin-top: .7rem; }
+.her-hero-content>.her-ornament-divider { width: 220px; margin: .75rem auto 0; }
+.her-search-row { display: flex; align-items: stretch; gap: .5rem; max-width: 510px; margin: 1.7rem auto 0; }
+.her-page .ow-search { background: var(--her-cream); border: 1px solid var(--her-red); border-radius: 6px; box-shadow: 4px 4px 0 #971f3b15; padding: .45rem .5rem .45rem 1rem; min-height: 52px; }
+.her-page .ow-search input,.her-page .ow-search>svg { color: var(--her-ink); font-size: .8rem; }
+.her-page .ow-search input::placeholder { color: #98717a; }
+.her-page .ow-search-submit { background: var(--her-red); color: var(--her-cream); box-shadow: none; border-radius: 3px; width: 38px; height: 38px; }
+.her-page .ow-search-submit:disabled { background: #c18490; }
+.her-page .ow-search:focus-within { box-shadow: 0 0 0 3px #bc344815; border-color: var(--her-red); }
+.her-location { border: 1px solid var(--her-line); border-radius: 6px; display: flex; align-items: center; gap: .5rem; padding: .65rem 1rem; font-size: .72rem; white-space: nowrap; color: var(--her-red); background: var(--her-mint); }
+.her-hero-link { display: inline-flex; align-items: center; gap: .7rem; margin-top: 1.5rem; font-size: .67rem; color: var(--her-red); min-height: 36px; }
+.her-hero-note { width: 155px; position: absolute; right: max(4rem,calc((100vw - 1200px)/2)); top: 44%; background: var(--her-mint); padding: 1rem .6rem .7rem; border: 1px solid var(--her-red); outline: 1px solid #971f3b40; outline-offset: -7px; border-radius: 90px 90px 4px 4px; transform: rotate(8deg); box-shadow: 6px 6px 0 #971f3b15; animation: her-note-sway 9s ease-in-out infinite; }
+.her-hero-note .her-sky { width: 100%; }
+.her-hero-note>span { display: block; text-align: center; font-size: .64rem; color: var(--her-red); }
+.her-hero-note>i { display: block; font-size: 1.2rem; text-align: center; font-style: normal; color: var(--her-red); }
+.her-flower { width: 70px; height: 70px; color: var(--her-red); }
+.her-hero-flower { position: absolute; width: 58px; height: 58px; top: 14%; right: max(8rem,calc((100vw - 1050px)/2)); animation: her-flower-turn 50s linear infinite; }
+.her-rose { color: var(--her-red); width: 100px; }
+.her-bow { color: var(--her-red); width: 80px; }
+.her-hero-bow { position: absolute; top: 29%; right: max(9rem,calc((100vw - 1030px)/2)); width: 92px; transform: rotate(10deg); }
+.her-hero-window { position: absolute; top: 12%; left: max(3rem,calc((100vw - 1230px)/2)); width: 200px; color: var(--her-red); animation: her-window-float 10s ease-in-out infinite; }
+.her-hero-window>.her-tracery { width: 100%; height: auto; opacity: .9; }
+.her-hero-window>.her-rose { position: absolute; width: 100px; left: 25%; top: 27%; }
+.her-hero-window>span { position: absolute; bottom: 10%; width: 100%; text-align: center; font-size: .42rem; letter-spacing: .15em; line-height: 1.7; }
+.her-ornament-divider { display: flex; gap: .3rem; align-items: center; color: var(--her-red); width: 100%; }
+.her-ornament-divider>span { height: 1px; background: currentColor; opacity: .45; flex: 1; }
+.her-ornament-divider>svg { width: 90px; height: 36px; flex: none; }
+.her-scarlet-ribbon { display: flex; align-items: center; justify-content: center; gap: 2rem; background: var(--her-red); color: var(--her-blush); padding: .7rem 1rem; font-size: .56rem; letter-spacing: .18em; border-bottom: 4px double var(--her-blush); }
+.her-scarlet-ribbon>span { font-size: 1rem; line-height: 1; }
+.her-hero-side-label { position: absolute; right: 2rem; bottom: 2rem; writing-mode: vertical-rl; font-size: .5rem; letter-spacing: .18em; color: var(--her-muted); }
+.her-shell { max-width: 1250px; margin-inline: auto; padding: 3rem 2rem 1.5rem; }
+.her-wardrobe-section { scroll-margin-top: 100px; }
+.her-studio { animation: her-arrive .6s ease both; }
+.her-studio-heading { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-bottom: 1.8rem; }
+.her-studio-heading h2 { font-size: clamp(2.4rem,3.5vw,3.4rem); margin-top: .5rem; line-height: 1.15; color: var(--her-red); }
+.her-forecast-ticket { display: flex; align-items: center; gap: 2rem; border: 1px solid var(--her-red); border-radius: 5px; padding: .7rem 1rem; margin: 0; background: var(--her-butter); box-shadow: 4px 4px 0 #971f3b10; }
+.her-forecast-ticket .her-eyebrow { font-size: .52rem; }
+.her-forecast-ticket .atelier-city { color: var(--her-muted); }
+.her-forecast-ticket .atelier-temperature strong { color: var(--her-red); font-size: 2.2rem; }
+.her-forecast-ticket .atelier-temperature button { color: var(--her-red); background: var(--her-blush); }
+.her-look-board { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem,3vw,2.5rem); align-items: start; }
+.her-look-canvas { position: sticky; top: 100px; isolation: isolate; background: var(--her-lavender); border: 1px solid var(--her-line); outline: 1px solid #c7849770; outline-offset: -7px; border-radius: 8px; padding: 2.5rem 1.6rem 1.25rem; min-width: 0; }
+.her-canvas-tracery { position: absolute; z-index: -1; width: calc(100% - 30px); height: 80%; top: 12px; left: 15px; color: var(--her-red); opacity: .6; }
+.her-canvas-meta { display: flex; justify-content: space-between; gap: .5rem; font-size: .49rem; letter-spacing: .1em; color: var(--her-red); border-bottom: 1px solid #c7849750; padding-bottom: .8rem; margin-top: 5rem; }
+.her-look-stamp { display: flex; align-items: center; justify-content: center; flex-direction: column; position: absolute; right: .5rem; top: 26%; border: 1px solid var(--her-red); outline: 1px dashed var(--her-red); outline-offset: -5px; color: var(--her-red); font-family: var(--font-her-serif),serif; font-style: italic; font-size: .95rem; line-height: 1.1; text-align: center; background: var(--her-butter); width: 85px; height: 85px; border-radius: 50%; transform: rotate(12deg); z-index: 1; }
+.her-look-stamp>svg { margin-bottom: .25rem; }
+.her-garment-frame { margin: 1.2rem auto .5rem; max-width: 440px; animation: her-arrive .4s ease both; }
+.her-garment-frame .atelier-garments { width: 100%; max-width: none; height: auto; min-height: 0; overflow: visible; }
+.her-canvas-flower { position: absolute; left: 1.3rem; bottom: 24%; width: 42px; height: 42px; color: var(--her-red); animation: her-flower-turn 45s linear infinite reverse; }
+.her-palette { display: flex; justify-content: center; gap: .8rem; margin-top: .8rem; }
+.her-palette button { width: 34px; height: 34px; border: 3px solid var(--her-cream); border-radius: 50%; outline: 1px solid #cab2c6; transition: transform .25s,outline-color .25s; }
+.her-palette button[aria-pressed="true"] { outline: 2px solid var(--her-red); outline-offset: 3px; transform: scale(.92); }
+.her-palette-label { font-size: .69rem; text-align: center; color: var(--her-ink); margin-top: .8rem; }
+.her-palette-label span { display: block; font-size: .56rem; color: var(--her-muted); margin-top: .3rem; }
+.her-weather-ribbon { display: flex; flex-wrap: wrap; gap: .5rem .85rem; justify-content: center; margin-top: 1.4rem; padding: .85rem .5rem; border: 1px solid #c7849760; color: var(--her-ink); background: var(--her-mint); border-radius: 4px; }
+.her-weather-ribbon>span { display: inline-flex; align-items: center; gap: .2rem; font-size: .6rem; }
+.her-look-options { min-width: 0; padding: 1.6rem; background: var(--her-blush); border: 1px solid var(--her-line); border-radius: 8px; }
+.her-options-heading { display: grid; grid-template-columns: 42px 1fr; column-gap: .75rem; align-items: center; margin-bottom: 1.1rem; color: var(--her-red); }
+.her-options-heading>.her-bow { width: 42px; }
+.her-options-heading>span { font-family: var(--font-her-gothic),serif; font-size: 1.9rem; }
+.her-options-heading>.her-ornament-divider { grid-column: 1 / -1; }
+.her-control-label { display: block; font-size: .7rem; color: var(--her-ink); font-weight: 600; }
+.her-choice-section+.her-choice-section { margin-top: 1.2rem; }
+.her-occasion-picker,.her-silhouette-picker { display: flex; gap: .55rem; margin-top: .6rem; }
+.her-occasion-picker>button,.her-silhouette-picker>button { display: flex; align-items: center; justify-content: center; gap: .4rem; font-size: .7rem; border: 1px solid var(--her-line); color: var(--her-ink); background: var(--her-cream); border-radius: 4px; padding: .55rem .65rem; min-height: 44px; flex: 1; transition: background .2s,color .2s,transform .2s; }
+.her-occasion-picker>button[aria-pressed="true"],.her-silhouette-picker>button[aria-pressed="true"] { background: var(--her-red); border-color: var(--her-red); color: var(--her-cream); }
+.her-occasion-picker>button:hover,.her-silhouette-picker>button:hover { transform: translateY(-2px); }
+.her-piece-heading { display: flex; justify-content: space-between; gap: .5rem; margin: 1.6rem 0 .6rem; }
+.her-piece-heading>span:last-child { font-size: .54rem; color: var(--her-muted); }
+.her-piece-list { gap: .5rem; }
+.her-piece { width: 100%; display: flex; align-items: center; gap: .7rem; text-align: left; padding: .8rem .7rem; border: 1px solid #c7849760; border-radius: 5px; background: var(--her-cream); transition: background .2s,border-color .2s; }
+.her-piece:nth-child(3n+2) { background: var(--her-lavender); }
+.her-piece:nth-child(3n+3) { background: var(--her-mint); }
+.her-piece[aria-pressed="true"],.her-piece:hover { background: var(--her-butter); border-color: var(--her-red); }
+.her-piece-index { font-size: .54rem; color: #96626d; }
+.her-piece-icon { display: grid; place-items: center; width: 36px; height: 40px; background: var(--her-blush); color: var(--her-red); border: 1px solid #971f3b40; border-radius: 20px 20px 3px 3px; flex: none; }
+.her-piece:nth-child(3n+2) .her-piece-icon { background: var(--her-lavender); }
+.her-piece:nth-child(3n+3) .her-piece-icon { background: var(--her-butter); }
+.her-piece small { display: block; font-size: .49rem; letter-spacing: .13em; color: var(--her-muted); margin-bottom: .2rem; }
+.her-piece strong { display: block; font-size: .8rem; font-weight: 500; color: var(--her-ink); line-height: 1.4; }
+.her-piece-arrow { margin-left: auto; color: #b87481; flex: none; }
+.her-comfort { display: flex; align-items: center; justify-content: space-between; gap: .7rem; margin-top: 1.25rem; font-size: .65rem; }
+.her-comfort select { min-width: 0; max-width: 63%; font-size: .63rem; padding: .65rem .35rem; background: var(--her-butter); color: var(--her-ink); border: 1px solid #e7d6b6; border-radius: 10px; min-height: 40px; }
+.her-look-note { border: 1px solid var(--her-line); border-left: 3px solid var(--her-red); background: var(--her-butter); padding: .9rem 1rem; margin-top: 1.5rem; }
+.her-look-note h3 { font-size: 1.7rem; line-height: 1.2; }
+.her-look-note p { font-size: .73rem; line-height: 1.75; color: var(--her-muted); margin-top: .45rem; }
+.her-look-note .her-personal-note { font-style: italic; }
+.her-look-note details { font-size: .65rem; color: var(--her-red); margin-top: .55rem; }
+.her-look-note summary { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.her-look-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.4rem; }
+.her-button { display: inline-flex; justify-content: center; align-items: center; gap: .55rem; padding: .8rem 1rem; min-height: 46px; font-size: .72rem; background: var(--her-red); color: var(--her-cream); border: 1px solid var(--her-red); border-radius: 4px; box-shadow: 3px 3px 0 #971f3b18; transition: transform .2s,box-shadow .2s; }
+.her-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px #bc34481a; }
+.her-button-secondary { color: var(--her-red); background: var(--her-lavender); border-color: var(--her-line); }
+.her-save-status { min-height: 1.1rem; font-size: .7rem; color: var(--her-red); margin-top: .65rem; }
+.her-error { display: flex; align-items: start; gap: .5rem; max-width: 510px; margin: 1rem auto 0; text-align: left; font-size: .75rem; background: var(--her-cream); color: #a12d40; border: 1px solid #d79ba6; border-radius: 12px; padding: .8rem; }
+.her-error>svg { flex: none; }
+.her-last-city { display: flex; width: fit-content; margin-inline: auto; gap: .35rem; align-items: center; font-size: .68rem; color: var(--her-red); margin-top: .7rem; min-height: 32px; }
+.her-empty-lookbook { display: grid; grid-template-columns: .8fr 1.2fr; gap: 3rem; align-items: center; padding: 2.5rem; border: 1px solid var(--her-line); outline: 1px solid #c7849770; outline-offset: -8px; background: var(--her-lavender); border-radius: 8px; }
+.her-empty-copy>.her-ornament-divider { max-width: 220px; margin-top: .6rem; }
+.her-empty-copy h2 { font-size: clamp(2.8rem,5vw,4.6rem); line-height: 1.08; margin-top: 1rem; }
+.her-empty-copy h2 em { color: var(--her-red); }
+.her-empty-copy>p { font-size: .87rem; line-height: 1.8; color: var(--her-muted); margin: 1rem 0 1.4rem; max-width: 23rem; }
+.her-empty-copy>small { display: block; font-size: .6rem; color: var(--her-muted); margin-top: .65rem; }
+.her-lookbook-fan { position: relative; height: 410px; max-width: 540px; width: 100%; justify-self: center; }
+.her-lookbook-card { position: absolute; top: 1.5rem; width: 205px; height: 315px; border: 1px solid var(--her-red); outline: 1px solid #971f3b40; outline-offset: -6px; padding: 1rem .65rem; border-radius: 90px 90px 5px 5px; background: var(--her-butter); box-shadow: 0 15px 25px #772b3b12; }
+.her-lookbook-card:nth-child(1) { left: 4%; transform: rotate(-14deg); }
+.her-lookbook-card:nth-child(2) { left: calc(50% - 102px); top: .5rem; transform: rotate(2deg); background: var(--her-blush); z-index: 1; animation: her-card-bob 9s ease-in-out infinite; }
+.her-lookbook-card:nth-child(3) { right: 1%; transform: rotate(14deg); background: var(--her-mint); }
+.her-lookbook-card>span { display: block; font-size: .4rem; letter-spacing: .15em; text-align: center; margin-top: .7rem; }
+.her-lookbook-card>strong { display: block; text-align: center; font-family: var(--font-her-serif),serif; font-size: 1.25rem; line-height: 1.1; font-weight: 600; color: var(--her-red); }
+.her-lookbook-card .atelier-garments { height: 235px; min-height: 0; width: 100%; }
+.her-lookbook-fan>.her-flower { position: absolute; bottom: 1rem; right: 5%; z-index: 2; width: 60px; height: 60px; animation: her-flower-turn 35s linear infinite; }
+.her-fan-rose { position: absolute; left: 5%; bottom: -1rem; width: 100px; z-index: 2; transform: rotate(-25deg); }
+.her-loading { padding: 4rem 1rem; text-align: center; background: var(--her-lavender); border: 1px solid var(--her-line); border-radius: 8px; }
+.her-loading>.her-flower { margin: 0 auto 1rem; animation: her-flower-turn 5s linear infinite; }
+.her-loading h2 { font-size: 2rem; }.her-loading p { font-size: .8rem; margin-top: .5rem; }
+.her-weather-details { background: var(--her-mint); border: 1px solid var(--her-line); border-radius: 6px; margin-top: 2.5rem; }
+.her-weather-details>summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; list-style: none; padding: 1.2rem 1.4rem; cursor: pointer; }
+.her-weather-details>summary::-webkit-details-marker { display: none; }
+.her-weather-details summary strong { display: block; font-family: var(--font-her-serif),serif; font-weight: 600; font-size: 1.8rem; margin-top: .3rem; color: var(--her-red); }
+.her-weather-details summary>span:last-child { display: flex; align-items: center; gap: 1.5rem; font-size: .73rem; }
+.her-weather-details summary b { font-size: 1.5rem; font-weight: 400; transition: transform .25s; }
+.her-weather-details[open] summary b { transform: rotate(45deg); }
+.her-weather-content { padding: .5rem 1.4rem 1.5rem; }
+.her-weather-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.her-weather-stats>div { background: var(--her-blush); border: 1px solid #c7849770; padding: 1rem; border-radius: 4px; }
+.her-weather-stats>div:nth-child(2) { background: var(--her-lavender); }
+.her-weather-stats>div:nth-child(3) { background: var(--her-butter); }
+.her-weather-stats dt { font-size: .6rem; margin-top: .5rem; color: var(--her-muted); }
+.her-weather-stats dd { font-size: 1.1rem; color: var(--her-red); margin-top: .3rem; }
+.her-weather-content>p { font-size: .8rem; line-height: 1.8; margin: 1rem 0 .6rem; }
+.her-weather-content>small { font-size: .65rem; color: var(--her-muted); }
+.her-forecast-wrap:has(.ow-forecast) { margin-top: 2.5rem; }
+.her-page .ow-forecast { color: var(--her-ink); background: var(--her-lavender); border: 1px solid var(--her-line); border-radius: 6px; padding: 1.5rem; }
+.her-page .ow-forecast [class*="text-white"],.her-page .ow-forecast [class*="text-sky"] { color: var(--her-muted); }
+.her-page .ow-eyebrow { color: var(--her-red); }
+.her-page .ow-hour,.her-page .ow-day { background: var(--her-blush); color: var(--her-ink); border-color: #c7849780; }
+.her-page .ow-hour:nth-child(3n+2),.her-page .ow-day:nth-child(3n+2) { background: var(--her-mint); }
+.her-page .ow-hour:nth-child(3n+3),.her-page .ow-day:nth-child(3n+3) { background: var(--her-butter); }
+.her-page .ow-forecast-tabs { background: var(--her-blush); border-color: var(--her-line); }
+.her-page .ow-forecast-tabs button { color: var(--her-muted); }
+.her-page .ow-forecast-tabs button.active { background: var(--her-red); color: var(--her-cream); }
+.her-skies { margin-top: 3.5rem; padding: 1.7rem; background: var(--her-blush); border: 1px solid var(--her-line); border-radius: 6px; }
+.her-skies>header { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1.5rem; }
+.her-skies h2 { font-size: clamp(1.8rem,3vw,2.6rem); margin-top: .6rem; line-height: 1.15; }
+.her-sky-gallery { display: flex; gap: 1rem; overflow-x: auto; padding: .3rem .2rem 1rem; scroll-snap-type: x mandatory; scrollbar-color: var(--her-line) var(--her-cream); }
+.her-sky-card { flex: 0 0 170px; background: var(--her-mint); border: 1px solid var(--her-red); outline: 1px solid #971f3b35; outline-offset: -6px; border-radius: 100px 100px 5px 5px; padding: 1rem .85rem; scroll-snap-align: start; transition: transform .25s,border-color .25s; }
+.her-sky-card:nth-child(3n+2) { background: var(--her-lavender); }
+.her-sky-card:nth-child(3n+3) { background: var(--her-butter); }
+.her-sky-card[aria-pressed="true"] { border: 2px solid var(--her-red); padding: calc(1rem - 1px) calc(.85rem - 1px); box-shadow: inset 0 -4px 0 var(--her-red); }
+.her-sky-card:hover { transform: translateY(-3px); border-color: var(--her-red); }
+.her-sky-card>span { display: flex; justify-content: space-between; align-items: center; font-size: .75rem; gap: .3rem; margin-top: .5rem; color: var(--her-ink); }
+.her-skies>p { font-size: .66rem; color: var(--her-muted); margin-top: .35rem; }
+.her-text-button { display: inline-flex; align-items: center; gap: .4rem; color: var(--her-red); font-size: .7rem; min-height: 40px; }
+.her-how-it-works { display: flex; justify-content: center; align-items: center; gap: 1.3rem; border-top: 3px double var(--her-line); border-bottom: 3px double var(--her-line); padding: 1.5rem 1rem; margin-top: 2.8rem; background: var(--her-mint); }
+.her-how-it-works>span { display: inline-flex; gap: .65rem; align-items: center; color: var(--her-muted); font-size: .7rem; }
+.her-how-it-works b { color: var(--her-red); font-size: .6rem; font-weight: 500; }
+.her-how-it-works>.her-flower { width: 19px; height: 19px; }
+.her-footer { text-align: center; color: var(--her-red); padding: 2rem 1rem 1.5rem; margin-top: 1.5rem; background: var(--her-lavender); border: 1px solid var(--her-line); }
+.her-footer>.her-ornament-divider { max-width: 450px; margin: 0 auto 1rem; }
+.her-footer>.her-bow { width: 50px; margin: auto; }
+.her-footer p { font-family: var(--font-her-serif),serif; font-size: 1.8rem; margin: .6rem 0; }.her-footer>span { display: block; font-size: .5rem; letter-spacing: .14em; color: var(--her-muted); }
+.her-sky-cloud { animation: her-cloud-drift 8s ease-in-out infinite; }
+.her-sky-rain,.her-sky-snow { animation: her-drizzle 3s ease-in-out infinite; }
+@keyframes her-cloud-drift { 0%,100% { transform: translateX(-2px); } 50% { transform: translateX(5px); } }
+@keyframes her-drizzle { 0%,100% { transform: translateY(-2px); opacity: .65; } 50% { transform: translateY(2px); opacity: 1; } }
+@keyframes her-flower-turn { to { transform: rotate(360deg); } }
+@keyframes her-note-sway { 0%,100% { transform: rotate(8deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-6px); } }
+@keyframes her-window-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes her-card-bob { 0%,100% { transform: rotate(2deg) translateY(0); } 50% { transform: rotate(0) translateY(-8px); } }
+@keyframes her-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+/* The same pastel gothic identity carries through the saved edit and preferences. */
+.wardrobe-app[data-for-her="true"] .atelier-favorites-page { background: var(--her-cream); background-image: radial-gradient(#971f3b18 .8px,transparent .8px); background-size: 18px 18px; }
+.wardrobe-app[data-for-her="true"] .atelier-favorites-heading h1 { color: var(--her-red); font-family: var(--font-her-gothic),Georgia,serif; font-weight: 700; letter-spacing: -.02em; }
+.wardrobe-app[data-for-her="true"] .atelier-favorites-heading p,
+.wardrobe-app[data-for-her="true"] .atelier-favorites-empty { color: var(--her-muted); }
+.wardrobe-app[data-for-her="true"] .ow-return { color: var(--her-red); background: var(--her-blush); border-color: var(--her-line); }
+.wardrobe-app[data-for-her="true"] .atelier-saved-look { background: var(--her-blush); border: 1px solid var(--her-line); border-radius: 6px; box-shadow: 5px 5px 0 #971f3b15; color: var(--her-ink); }
+.wardrobe-app[data-for-her="true"] .atelier-saved-look:nth-child(3n+2) { background: var(--her-mint); }
+.wardrobe-app[data-for-her="true"] .atelier-saved-look:nth-child(3n+3) { background: var(--her-butter); }
+.wardrobe-app[data-for-her="true"] .atelier-saved-look h2 { font-family: var(--font-her-serif),serif; color: var(--her-red); font-size: 2rem; }
+.wardrobe-app[data-for-her="true"] .atelier-favorites-empty { background: var(--her-lavender); border-color: var(--her-line); }
+.wardrobe-app[data-for-her="true"] .atelier-favorites-empty h2 { font-family: var(--font-her-serif),serif; color: var(--her-red); }
+.wardrobe-app[data-for-her="true"] .atelier-saved-art { background: var(--her-lavender); border: 1px solid var(--her-line); outline: 1px solid #971f3b35; outline-offset: -6px; border-radius: 100px 100px 5px 5px; }
+.wardrobe-app[data-for-her="true"] .atelier-label,
+.wardrobe-app[data-for-her="true"] .atelier-saved-location,
+.wardrobe-app[data-for-her="true"] .atelier-saved-pieces small,
+.wardrobe-app[data-for-her="true"] .atelier-saved-note { color: var(--her-muted); }
+.wardrobe-app[data-for-her="true"] .atelier-remove { color: var(--her-red); }
+.wardrobe-app[data-for-her="true"] .ow-eyebrow { color: var(--her-red); }
+@media(max-width:1150px) {
+  .her-hero-note { width: 125px; right: 2rem; top: 48%; }
+  .her-hero-window { width: 150px; left: 2rem; top: 23%; }.her-hero-window>.her-rose { width: 76px; }.her-hero-window>span { font-size: .33rem; }
+  .her-hero-flower { right: 4rem; width: 45px; height: 45px; }.her-hero-bow { right: 3rem; width: 70px; }
+  .her-hero-content { max-width: 610px; }.her-hero h1 { font-size: 6rem; }
+}
+@media(max-width:950px) {
+  .her-hero-note,.her-hero-window,.her-hero-bow { display: none; }
+  .her-hero-flower { top: 2rem; right: 2rem; width: 40px; height: 40px; }
+  .her-hero-side-label { display: none; }
+  .her-look-board { gap: 1.2rem; grid-template-columns: .9fr 1.1fr; }
+  .her-look-canvas { padding-inline: 1rem; }.her-look-options { padding: 1.1rem; }
+  .her-canvas-meta { font-size: .43rem; }
+  .her-look-stamp { width: 68px; height: 68px; font-size: .8rem; right: .5rem; }
+  .her-piece-heading>span:last-child { display: none; }
+  .her-occasion-picker>button,.her-silhouette-picker>button { padding: .5rem; font-size: .65rem; }
+  .her-piece { gap: .45rem; }.her-piece strong { font-size: .74rem; }
+  .her-empty-lookbook { gap: 1.5rem; padding: 1.5rem; }.her-lookbook-fan { height: 355px; }.her-lookbook-card { width: 170px; height: 290px; }.her-lookbook-card:nth-child(2) { left: calc(50% - 85px); }.her-lookbook-card .atelier-garments { height: 200px; }
+}
+@media(max-width:700px) {
+  .her-hero { padding: 2.5rem 1.5rem 1.7rem; }.her-hero::before { inset: 10px; outline-offset: 3px; }
+  .her-hero h1 { font-size: clamp(3.4rem,12vw,5rem); max-width: 8ch; margin-inline: auto; }
+  .her-kicker { font-size: .48rem; gap: .4rem; letter-spacing: .13em; }
+  .her-hero-content>p { font-size: .75rem; }.her-hero-content>.her-hero-poem { font-size: 1.5rem; }.her-hero-flower { width: 25px; height: 25px; top: 1.2rem; right: 1.2rem; }
+  .her-scarlet-ribbon { gap: .65rem; font-size: .42rem; letter-spacing: .1em; }.her-scarlet-ribbon>span { font-size: .75rem; }.her-scarlet-ribbon>span:first-child,.her-scarlet-ribbon>span:last-child { display: none; }
+  .her-search-row { gap: .5rem; }.her-location { padding-inline: .85rem; }.her-location>span { display: none; }
+  .her-shell { padding: 2rem 1rem 1rem; }
+  .her-studio-heading { align-items: start; flex-direction: column; gap: 1rem; margin-bottom: 1.2rem; }
+  .her-studio-heading h2 { font-size: 2.4rem; }.her-forecast-ticket { width: 100%; justify-content: space-between; }
+  .her-look-board { grid-template-columns: 1fr; gap: 1.5rem; }
+  .her-look-canvas { position: relative; top: auto; padding: 1.8rem 1rem 1rem; }
+  .her-canvas-tracery { height: 79%; }
+  .her-garment-frame { max-width: 285px; margin-top: .8rem; }.her-canvas-meta { margin-top: 3.8rem; padding-inline: .75rem; font-size: .45rem; }
+  .her-look-stamp { top: 24%; right: 1rem; transform: rotate(12deg); }.her-canvas-flower { left: 1rem; bottom: 27%; width: 33px; height: 33px; }
+  .her-weather-ribbon { margin-top: 1rem; gap: .65rem; }.her-weather-ribbon>span { font-size: .55rem; }
+  .her-occasion-picker>button,.her-silhouette-picker>button { font-size: .7rem; min-height: 44px; }
+  .her-piece { padding-block: .85rem; gap: .6rem; }.her-piece strong { font-size: .77rem; }.her-piece-index { font-size: .57rem; }.her-piece-icon { width: 32px; height: 36px; }
+  .her-comfort { gap: .5rem; font-size: .62rem; }.her-comfort select { font-size: .6rem; }
+  .her-look-actions { flex-wrap: nowrap; gap: .5rem; }.her-look-actions .her-button { flex: 1; padding: .65rem .55rem; font-size: .65rem; }
+  .her-empty-lookbook { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem; }.her-empty-copy h2 { font-size: 3.2rem; }.her-empty-copy>p { font-size: .8rem; max-width: none; }
+  .her-lookbook-fan { height: 350px; margin-top: 1.8rem; max-width: 440px; }.her-lookbook-card { width: 145px; height: 270px; }.her-lookbook-card:nth-child(2) { left: calc(50% - 72px); }.her-lookbook-card .atelier-garments { height: 160px; }.her-lookbook-card>strong { font-size: 1.15rem; margin-top: .4rem; }.her-lookbook-card:nth-child(1) { left: 0; }.her-lookbook-card:nth-child(3) { right: 0; }.her-lookbook-fan>.her-flower { width: 47px; height: 47px; bottom: 1rem; }.her-fan-rose { width: 75px; }
+  .her-weather-details>summary { padding: 1rem; }.her-weather-details summary strong { font-size: 1.35rem; }.her-weather-details summary>span:last-child { font-size: .65rem; gap: .6rem; }
+  .her-weather-content { padding: .2rem 1rem 1.2rem; }.her-weather-stats { gap: .5rem; }.her-weather-stats>div { padding: .7rem; }.her-weather-stats dd { font-size: .85rem; }.her-weather-stats dt { font-size: .55rem; }
+  .her-skies { margin-top: 2rem; padding: 1.1rem; }.her-skies>header { align-items: start; flex-direction: column; margin-bottom: 1rem; }.her-skies h2 { font-size: 2rem; }.her-sky-card { flex-basis: 150px; }
+  .her-page .ow-forecast { padding: 1rem; }.her-page .ow-forecast-tabs { width: 100%; }.her-page .ow-forecast-tabs button { flex: 1; }
+  .her-how-it-works { justify-content: start; flex-wrap: wrap; gap: .7rem 1rem; }.her-how-it-works>.her-flower { display: none; }.her-how-it-works>span { font-size: .62rem; }
+  .her-footer p { font-size: 1.55rem; }
+}
+@media(max-width:360px) {
+  .her-lookbook-card { width: 128px; }.her-lookbook-card:nth-child(2) { left: calc(50% - 64px); }.her-lookbook-card>strong { font-size: 1rem; }
+  .her-hero h1 { font-size: 3.5rem; }.her-studio-heading h2 { font-size: 2.2rem; }
+  .her-comfort { flex-direction: column; align-items: start; }.her-comfort select { width: 100%; max-width: none; }
+  .her-look-actions { flex-direction: column; }.her-canvas-meta { padding-inline: 0; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .her-page *, .her-page *::before, .her-page *::after { animation: none!important; transition: none!important; }
+  .her-hero-note { transform: rotate(8deg); }
+  .her-button:hover,.her-sky-card:hover,.her-occasion-picker>button:hover,.her-silhouette-picker>button:hover { transform: none; }
+}
+.wardrobe-app[data-motion="off"] .her-button:hover,
+.wardrobe-app[data-motion="off"] .her-sky-card:hover,
+.wardrobe-app[data-motion="off"] .her-occasion-picker>button:hover,
+.wardrobe-app[data-motion="off"] .her-silhouette-picker>button:hover { transform: none; }
+.her-preferences-page { min-height: calc(100svh - 76px); padding: 3rem 1.25rem!important; background: var(--her-lavender); background-image: radial-gradient(#971f3b18 .8px,transparent .8px); background-size: 18px 18px; }
+.her-preferences-page>h1 { font-family: var(--font-her-gothic),serif; color: var(--her-red); font-weight: 700; letter-spacing: -.02em; margin-top: 1rem; }
+.her-preferences-page>div { border-radius: 6px; background: var(--her-blush); border-color: var(--her-line); box-shadow: 5px 5px 0 #971f3b15; }
+.her-preferences-page [class*="text-gray"] { color: var(--her-muted); }
+.her-preferences-page input,.her-preferences-page textarea { background: var(--her-cream); border-radius: 4px; }
+.her-preferences-page [class*="border p-4"] { background: var(--her-mint); border-radius: 5px; border-color: var(--her-line); }
+.her-preferences-page [class*="border p-4"]:nth-child(3n+2) { background: var(--her-butter); }
+.her-preferences-page [class*="border p-4"]:nth-child(3n+3) { background: var(--her-lavender); }
+.her-preferences-page [class*="justify-between"] { flex-wrap: wrap; }
+.her-preferences-page [class*="justify-between"]>button { min-height: 44px; font-size: .75rem; }
+@media(max-width:360px) { .her-preferences-page [class*="justify-between"]>button { width: 100%; } }
