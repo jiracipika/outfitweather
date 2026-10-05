@@ -6,7 +6,7 @@ export type Comfort = "cold" | "forecast" | "warm"
 export type Palette = "soft" | "earth" | "classic" | "cherry"
 export type StylePreferences = { occasion: Occasion; silhouette: Silhouette; comfort: Comfort; palette: Palette }
 export const LOOK_PALETTES: Record<Palette, { name: string; colors: string[] }> = {
-  cherry: { name: "Cherry & cream", colors: ["#c93c50", "#f9e8d4", "#b9abc8"] },
+  cherry: { name: "Cherry & cream", colors: ["#a12643", "#f7dddc", "#c3a7d8"] },
   soft: { name: "Soft rose", colors: ["#dfb7a9", "#ede0c9", "#596d86"] },
   earth: { name: "Earth tones", colors: ["#a7b9a2", "#e6d6ba", "#59655b"] },
   classic: { name: "Classic neutrals", colors: ["#ddd4c4", "#a88672", "#3e454e"] },

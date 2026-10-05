@@ -5,6 +5,7 @@ import type { WeatherData, OutfitRecommendation } from "@/lib/types"
 import { LOOK_PALETTES, type StyledLook, type StylePreferences, type Palette, type OutfitPiece, type Comfort } from "@/lib/outfit-styling"
 import WardrobeArt from "./wardrobe-art"
 import { HerFlower } from "./her-sky"
+import { HerBow, HerDivider, HerTracery } from "./her-ornaments"
 
 interface HerOutfitProps {
   weather: WeatherData
@@ -32,6 +33,7 @@ export default function HerOutfitView({ weather, base, demo, unit, onUnitChange,
     <header className="her-studio-heading"><div><span className="her-eyebrow">01 / THE OUTFIT EDIT</span><h2>Her outfit, sorted.</h2></div><div className="her-forecast-ticket atelier-weather-brief"><div><span className="her-eyebrow">{demo ? "SAMPLE FORECAST" : "LIVE FORECAST"}</span><span className="atelier-city"><MapPin size={12} />{weather.location.name}</span></div><div className="atelier-temperature"><strong>{temp(weather.current.temp_c)}°</strong><button type="button" onClick={() => onUnitChange(unit === "C" ? "F" : "C")} aria-label={`Switch to ${unit === "C" ? "Fahrenheit" : "Celsius"}`}>°{unit}</button>{onRefresh && <button type="button" disabled={isRefreshing} onClick={onRefresh} aria-label="Refresh weather"><RefreshCw size={15} className={isRefreshing ? "animate-spin" : ""} /></button>}</div></div></header>
     <div className="her-look-board">
       <div className="her-look-canvas">
+        <HerTracery className="her-canvas-tracery" />
         <div className="her-canvas-meta"><span>THE LITTLE LOOKBOOK</span><span>LOOK {String(variation + 1).padStart(2, "0")}</span></div>
         <span className="her-look-stamp"><Heart size={17} />made<br />for you</span>
         <div className="her-garment-frame" key={`${preferences.occasion}-${preferences.silhouette}-${variation}-${preferences.comfort}`}><WardrobeArt look={look} active={active} /></div>
@@ -41,6 +43,7 @@ export default function HerOutfitView({ weather, base, demo, unit, onUnitChange,
         <div className="her-weather-ribbon"><span><Thermometer size={13} />Feels {temp(weather.current.feelslike_c ?? weather.current.temp_c)}°{unit}</span><span><Wind size={13} />{Math.round(weather.current.wind_kph)} km/h</span><span>{weather.current.condition.text}</span></div>
       </div>
       <div className="her-look-options">
+        <div className="her-options-heading" aria-hidden="true"><HerBow /><span>Make it yours</span><HerDivider /></div>
         <div className="her-choice-section"><span className="her-control-label">What’s the plan?</span><div className="her-occasion-picker" role="group" aria-label="Choose an occasion">{occasions.map(({ key, label, icon: Icon }) => <button type="button" key={key} aria-pressed={preferences.occasion === key} onClick={() => onPreferenceChange({ occasion: key })}><Icon size={16} />{label}</button>)}</div></div>
         <div className="her-choice-section"><span className="her-control-label">I’d like to wear</span><div className="her-silhouette-picker" role="group" aria-label="Clothing preference">{(["auto", "trousers", "dress"] as const).map(choice => <button type="button" key={choice} aria-pressed={preferences.silhouette === choice} onClick={() => onPreferenceChange({ silhouette: choice })}>{choice === "dress" ? "A dress" : choice === "auto" ? "Surprise me" : "Trousers"}</button>)}</div></div>
         <div className="her-piece-heading"><span className="her-control-label">The pieces</span><span>Tap a piece to take a closer look</span></div>
