@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
+import Script from "next/script"
 import { Inter, Fraunces, Cormorant_Garamond, UnifrakturCook } from "next/font/google"
 import "./globals.css"
 import "./studio.css"
@@ -29,6 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${display.variable} ${herSerif.variable} ${herGothic.variable}`}>
       <body style={{ fontFamily: "var(--font-body), system-ui, sans-serif" }}>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4128325832827761"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <WardrobePreferences><div className="flex min-h-screen flex-col">
             <Navbar />
