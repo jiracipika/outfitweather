@@ -7,6 +7,7 @@ import { buildStyledLook, LOOK_PALETTES, type Occasion, type Silhouette, type Co
 import { saveOutfitToLocalStorage } from "@/lib/local-storage-utils"
 import WardrobeArt from "./wardrobe-art"
 import HerOutfitView from "./her-outfit-view"
+import { Reveal, StaggerGroup, StaggerItem, TapButton } from "./motion-primitives"
 
 const occasions = [{ key: "casual", label: "Everyday", icon: Coffee }, { key: "work", label: "Work", icon: Briefcase }, { key: "evening", label: "Evening", icon: Moon }] as const
 const PREF_KEY = "ow:style-preferences"
@@ -54,11 +55,11 @@ function OutfitStudio({ weather, base, forHer, demo, unit, onUnitChange, isRefre
   }
   const showTemp = (c: number) => Math.round(unit === "C" ? c : c * 9 / 5 + 32)
   if (forHer) return <HerOutfitView weather={weather} base={base} demo={demo} unit={unit} onUnitChange={onUnitChange} isRefreshing={isRefreshing} onRefresh={onRefresh} look={look} preferences={preferences} variation={variation} active={active} onHighlight={setActive} onPreferenceChange={remember} onShuffle={() => setVariation(value => (value + 1) % 6)} onSave={save} message={message} />
-  return <article className="atelier" aria-label="Build your weather-ready outfit" aria-busy={isRefreshing}>
+  return <Reveal as="article" className="atelier" aria-label="Build your weather-ready outfit" aria-busy={isRefreshing}>
     <div className="atelier-weather-brief"><div><span className="atelier-label">{demo ? "SAMPLE FORECAST" : "LIVE FORECAST"}</span><span className="atelier-city"><MapPin size={12} />{weather.location.name}</span></div><div className="atelier-temperature"><strong>{showTemp(weather.current.temp_c)}°</strong><button type="button" onClick={() => onUnitChange(unit === "C" ? "F" : "C")} aria-label={`Switch to ${unit === "C" ? "Fahrenheit" : "Celsius"}`}>°{unit}</button>{onRefresh && <button type="button" disabled={isRefreshing} onClick={onRefresh} aria-label="Refresh weather"><RefreshCw size={15} className={isRefreshing ? "animate-spin" : ""} /></button>}</div></div>
     <header className="atelier-heading"><div><span className="atelier-label">THE WEATHER-READY WARDROBE</span><h2 className="ow-display">{forHer ? "Her outfit, sorted." : "Your outfit, sorted."}</h2></div><span className="atelier-edition">01 / DAILY EDIT</span></header>
-    <div className="atelier-conditions"><span><Thermometer size={12} />Feels {showTemp(weather.current.feelslike_c ?? weather.current.temp_c)}°{unit}</span><span><Wind size={12} />{Math.round(weather.current.wind_kph)} km/h</span><span>{weather.current.condition.text}</span></div>
-    <div className="atelier-occasions" role="group" aria-label="Choose an occasion">{occasions.map(({ key, label, icon: Icon }) => <button type="button" key={key} aria-pressed={occasion === key} onClick={() => remember({ occasion: key })} className={occasion === key ? "selected" : ""}><Icon size={15} />{label}</button>)}</div>
+    <StaggerGroup className="atelier-conditions" stagger={0.07} delay={0.12}><StaggerItem as="span"><Thermometer size={12} />Feels {showTemp(weather.current.feelslike_c ?? weather.current.temp_c)}°{unit}</StaggerItem><StaggerItem as="span"><Wind size={12} />{Math.round(weather.current.wind_kph)} km/h</StaggerItem><StaggerItem as="span">{weather.current.condition.text}</StaggerItem></StaggerGroup>
+    <div className="atelier-occasions" role="group" aria-label="Choose an occasion">{occasions.map(({ key, label, icon: Icon }) => <TapButton type="button" key={key} aria-pressed={occasion === key} onClick={() => remember({ occasion: key })} className={occasion === key ? "selected" : ""}><Icon size={15} />{label}</TapButton>)}</div>
     {forHer && <div className="atelier-preference"><span>I’d like to wear</span><div role="group" aria-label="Clothing preference">{(["auto", "trousers", "dress"] as const).map(choice => <button type="button" key={choice} aria-pressed={silhouette === choice} onClick={() => remember({ silhouette: choice })} className={silhouette === choice ? "selected" : ""}>{choice === "dress" ? "A dress" : choice === "auto" ? "Surprise me" : "Trousers"}</button>)}</div></div>}
     <div className="atelier-board" key={forHer + "-" + occasion + "-" + silhouette + "-" + variation + "-" + comfort}>
       <div className="atelier-art"><span className="atelier-art-tag">THE LOOK <i>NO. {String(variation + 1).padStart(2, "0")}</i></span><WardrobeArt look={look} active={active} /><div className="atelier-swatches" role="group" aria-label="Choose a colour palette">{(Object.keys(LOOK_PALETTES) as Palette[]).map(key => <button type="button" key={key} aria-label={LOOK_PALETTES[key].name} aria-pressed={palette === key} onClick={() => remember({ palette: key })} style={{ background: `linear-gradient(120deg, ${LOOK_PALETTES[key].colors[0]} 33%, ${LOOK_PALETTES[key].colors[1]} 33% 66%, ${LOOK_PALETTES[key].colors[2]} 66%)` }} />)}</div><span className="atelier-art-caption">{LOOK_PALETTES[palette].name} · Pick your palette</span></div>
@@ -66,9 +67,9 @@ function OutfitStudio({ weather, base, forHer, demo, unit, onUnitChange, isRefre
     </div>
     <div className="atelier-comfort"><label htmlFor="comfort">Make it feel like you</label><select id="comfort" value={comfort} onChange={e => remember({ comfort: e.target.value as Comfort })}><option value="cold">I run cold · Extra warmth</option><option value="forecast">Dress for the forecast</option><option value="warm">I run warm · Lighter fabrics</option></select></div>
     <div className="atelier-caption"><h3 className="ow-display">{look.title}</h3><p>{look.note}</p>{comfort !== "forecast" && <p className="atelier-comfort-note">{comfort === "cold" ? "A little extra warmth, just for you." : "Lighter fabrics, with weather protection kept in."}</p>}<details className="atelier-advice"><summary>Why these layers?</summary><p>{base.description}</p></details></div>
-    <footer className="atelier-actions"><button type="button" className="atelier-shuffle" onClick={() => setVariation(value => (value + 1) % 6)}><RefreshCw size={15} />Try another look</button><button type="button" className="atelier-save" onClick={save}><Heart size={15} />Save this look<ArrowUpRight size={14} /></button></footer>
+    <footer className="atelier-actions"><TapButton type="button" className="atelier-shuffle" onClick={() => setVariation(value => (value + 1) % 6)}><RefreshCw size={15} />Try another look</TapButton><TapButton type="button" className="atelier-save" onClick={save}><Heart size={15} />Save this look<ArrowUpRight size={14} /></TapButton></footer>
     <p role="status" className="atelier-status">{message}</p>
-  </article>
+  </Reveal>
 }
 
 function PieceIcon({ piece }: { piece: OutfitPiece }) {

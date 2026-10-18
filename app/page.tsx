@@ -12,6 +12,7 @@ import { useWardrobePreferences } from "@/components/wardrobe-preferences"
 import HerDashboard from "@/components/her-dashboard"
 import WeatherScenery from "@/components/weather-scenery"
 import ForecastStrip from "@/components/forecast-strip"
+import { TapButton } from "@/components/motion-primitives"
 import { WeatherSkeleton } from "@/components/loading-skeleton"
 import type { WeatherData, OutfitRecommendation, CustomOutfitRule } from "@/lib/types"
 import { getOutfitRecommendation } from "@/lib/weather-utils"
@@ -146,23 +147,23 @@ export default function HomePage() {
             <p className="ow-intro mt-6 max-w-lg">A little weather wisdom. A look that feels like you. Pick your city, choose your plans, and leave the outfit to us.</p>
             <div className="mt-9 flex max-w-xl flex-col gap-3 sm:flex-row">
               <SearchBar onSearch={fetchWeather} isLoading={loading} />
-              <button type="button" onClick={useLocation} disabled={loading} className="ow-location-button"><LocateFixed size={18} /> Use my location</button>
+              <TapButton type="button" onClick={useLocation} disabled={loading} className="ow-location-button"><LocateFixed size={18} /> Use my location</TapButton>
             </div>
             {error && <div role="alert" className="ow-error mt-4 flex items-start gap-2"><CloudOff size={18} className="mt-0.5 shrink-0" />{error}</div>}
             <p className="mt-4 text-xs text-white/65">Search any city, or allow location to see your local conditions.</p>
-            {lastCity && !weatherData && <button type="button" onClick={() => void fetchWeather(lastCity)} className="ow-last-city mt-4">↗ See {lastCity} again</button>}
+            {lastCity && !weatherData && <TapButton type="button" onClick={() => void fetchWeather(lastCity)} className="ow-last-city mt-4">↗ See {lastCity} again</TapButton>}
           </div>
 
           <div className="ow-feature relative">
             {loading && !sceneWeather ? <WeatherSkeleton /> : sceneWeather && recommendation ? (
-              <OutfitStudio weather={sceneWeather} base={recommendation} forHer={forHer} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} isRefreshing={loading} onRefresh={!preview && currentQuery ? () => void fetchWeather(currentQuery) : undefined} />
+              <OutfitStudio key={`${preview ?? "live"}-${sceneWeather.location.name}`} weather={sceneWeather} base={recommendation} forHer={forHer} demo={Boolean(preview)} unit={unit} onUnitChange={setUnit} isRefreshing={loading} onRefresh={!preview && currentQuery ? () => void fetchWeather(currentQuery) : undefined} />
             ) : (
               <div className="atelier-empty">
                 <span className="atelier-label">YOUR OUTFIT STARTS HERE</span>
                 <div className="atelier-empty-art" aria-hidden="true"><span>✦</span><WardrobeArt look={buildStyledLook(buildDemoWeather("clear-day"), forHer, "casual", forHer ? "dress" : "trousers")} /><i>01 / THE DAILY EDIT</i></div>
                 <h2 className="ow-display">{forHer ? "Made for her kind of day." : "Good weather. Better layers."}</h2>
                 <p>Find your forecast to build a complete look. Or take the wardrobe for a spin with sample weather.</p>
-                <button type="button" onClick={() => choosePreview("clear-day")} className="atelier-save">Try a sunny-day look <span aria-hidden="true">↗</span></button>
+                <TapButton type="button" onClick={() => choosePreview("clear-day")} className="atelier-save">Try a sunny-day look <span aria-hidden="true">↗</span></TapButton>
               </div>
             )}
           </div>
@@ -174,17 +175,17 @@ export default function HomePage() {
         <section id="sky-gallery" className="ow-gallery ow-scene-section mt-14" aria-label="Weather scene previews">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div><div className="ow-eyebrow mb-2">INTERACTIVE SKY GALLERY</div><h2 className="ow-display text-2xl sm:text-3xl">Try a different forecast</h2></div>
-            {preview && weatherData && <button type="button" className="ow-return" onClick={() => setPreview(null)}>↩ Back to live weather</button>}
+            {preview && weatherData && <TapButton type="button" className="ow-return" onClick={() => setPreview(null)}>↩ Back to live weather</TapButton>}
           </div>
           <div className="ow-scene-grid">
-            {DEMO_SCENE_KEYS.map((key) => {
+            {DEMO_SCENE_KEYS.map((key, sceneIndex) => {
               const active = preview === key
               const Icon = SCENE_ICONS[key]
-              return <button key={key} type="button" onClick={() => choosePreview(key)} aria-pressed={active} className={`ow-scene-chip ${active ? "is-active" : ""}`}>
+              return <TapButton key={key} type="button" entranceDelay={sceneIndex * 0.045} onClick={() => choosePreview(key)} aria-pressed={active} className={`ow-scene-chip ${active ? "is-active" : ""}`}>
                 <span aria-hidden="true" className="ow-scene-emoji"><Icon size={23} strokeWidth={1.5} /></span>
                 <span className="ow-scene-copy"><strong>{getWeatherScene(buildDemoWeather(key)).label}</strong><small>{SCENE_CUE[key]}</small></span>
                 <span aria-hidden="true" className="ow-scene-arrow">↗</span>
-              </button>
+              </TapButton>
             })}
           </div>
           <p className="mt-3 text-xs text-white/60">Scenes are sample weather. Search or use your location for live conditions.</p>

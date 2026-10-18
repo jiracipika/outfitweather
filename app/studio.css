@@ -180,3 +180,8 @@
 .atelier-her-toggle{white-space:nowrap;flex-shrink:0;}
 @media(max-width:850px){.wardrobe-app .ow-nav{grid-template-columns:minmax(0,1fr) auto;}.atelier-nav-controls nav{grid-column:1 / -1;min-width:0;padding-right:30px;gap:0;}.atelier-motion{justify-self:end;grid-column:2;grid-row:2;min-height:36px;}.atelier-motion span{display:none;}.ow-nav-link{padding:.4rem .5rem;gap:.3rem;}.atelier-nav-controls .atelier-her-toggle{font-size:.7rem;padding:.5rem .65rem;gap:.45rem;}.ow-atelier-page .ow-scene-section{padding:1.2rem;}.atelier-her-toggle .atelier-switch-track{flex:none;}.ow-atelier-page .ow-page-status{max-width:60%;}.ow-atelier-page .ow-scene-grid{margin-inline:-.3rem;}.ow-atelier-page .ow-scene-chip{flex-basis:170px;min-width:170px;}.atelier-sky-link{white-space:nowrap;}}
 @media(max-width:360px){.ow-nav-link>span:not(.sr-only){display:none!important;}.ow-nav-link .sr-only{display:inline;}.atelier-nav-controls nav{gap:.4rem;}.ow-nav-link{min-width:38px;min-height:38px;justify-content:center;}.atelier-nav-controls .atelier-her-toggle{padding:.5rem;gap:.4rem;}}
+/* Motion (motion/react) primitives: TapButton tags animated controls with
+   data-motion-transform. Motion owns the transform axis there (spring hover lift /
+   press), so CSS transitions stay off transform to avoid double-smoothing the
+   spring — colour, border and shadow transitions are kept. */
+[data-motion-transform]{transition-property:background,background-color,border-color,box-shadow,color,opacity !important;}

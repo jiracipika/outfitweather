@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import AppTransitionShell from "@/components/app-transition-shell"
 import { WardrobePreferences } from "@/components/wardrobe-preferences"
+import { MotionGate } from "@/components/motion-primitives"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display" })
@@ -37,12 +38,12 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <WardrobePreferences><div className="flex min-h-screen flex-col">
+          <WardrobePreferences><MotionGate><div className="flex min-h-screen flex-col">
             <Navbar />
             <main className="flex flex-1 flex-col items-center justify-center p-0 md:p-0">
               <AppTransitionShell>{children}</AppTransitionShell>
             </main>
-          </div><Toaster /></WardrobePreferences>
+          </div><Toaster /></MotionGate></WardrobePreferences>
         </ThemeProvider>
       </body>
     </html>
