@@ -1918,3 +1918,41 @@ svg {
     order: 3;
   }
 }
+
+.ow-backup {
+  margin-top: 45px;
+  padding: 22px 0 8px;
+  border-top: 1px dashed rgba(152, 101, 81, 0.4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 20px;
+  row-gap: 10px;
+}
+
+.ow-backup-copy {
+  margin: 0;
+  font-size: 11px;
+  color: rgba(80, 55, 45, 0.75);
+  max-width: 420px;
+}
+
+.ow-backup-actions {
+  display: flex;
+  gap: 22px;
+}
+
+.ow-backup-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ow-backup-status {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 11px;
+  color: #986551;
+}

@@ -98,3 +98,120 @@ export function getCustomOutfitRules(): CustomOutfitRule[] {
 export function saveCustomOutfitRules(rules: CustomOutfitRule[]): boolean {
   return writeArray(CUSTOM_RULES_KEY, rules)
 }
+
+export type OutfitBackup = {
+  app: "outfitweather"
+  version: 1
+  exportedAt: string
+  favorites: OutfitRecommendation[]
+  customRules: CustomOutfitRule[]
+}
+
+export type OutfitImportResult = {
+  importedFavorites: number
+  importedRules: number
+  duplicateFavorites: number
+  duplicateRules: number
+  invalidEntries: number
+  saved: boolean
+}
+
+export function exportOutfitBackup(): string | null {
+  if (typeof window === "undefined") return null
+  const backup: OutfitBackup = {
+    app: "outfitweather",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    favorites: getSavedOutfits(),
+    customRules: getCustomOutfitRules(),
+  }
+  try {
+    return JSON.stringify(backup, null, 2)
+  } catch {
+    return null
+  }
+}
+
+function isBackupPayload(
+  value: unknown,
+): value is { favorites: unknown[]; customRules: unknown[] } {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false
+  const record = value as Record<string, unknown>
+  return Array.isArray(record.favorites) && Array.isArray(record.customRules)
+}
+
+// Merge-only restore: validates every entry, never overwrites what the
+// browser already holds, and never throws on malformed files.
+export function importOutfitBackup(raw: unknown): OutfitImportResult | null {
+  let parsed: unknown = raw
+  if (typeof parsed === "string") {
+    try {
+      parsed = JSON.parse(parsed)
+    } catch {
+      return null
+    }
+  }
+  // A bare array is read as a favorites-only export.
+  const payload = isBackupPayload(parsed)
+    ? parsed
+    : Array.isArray(parsed)
+      ? { favorites: parsed, customRules: [] }
+      : null
+  if (!payload) return null
+
+  const favorites = getSavedOutfits()
+  const nextFavorites = [...favorites]
+  const result: OutfitImportResult = {
+    importedFavorites: 0,
+    importedRules: 0,
+    duplicateFavorites: 0,
+    duplicateRules: 0,
+    invalidEntries: 0,
+    saved: true,
+  }
+
+  for (const entry of payload.favorites) {
+    if (!isOutfit(entry)) {
+      result.invalidEntries += 1
+      continue
+    }
+    const exists = nextFavorites.some(
+      (favorite) =>
+        favorite.description === entry.description &&
+        favorite.temperature === entry.temperature &&
+        favorite.location === entry.location,
+    )
+    if (exists) {
+      result.duplicateFavorites += 1
+      continue
+    }
+    nextFavorites.push(entry)
+    result.importedFavorites += 1
+  }
+
+  const rules = getCustomOutfitRules()
+  const nextRules = [...rules]
+  for (const entry of payload.customRules) {
+    if (!isRule(entry)) {
+      result.invalidEntries += 1
+      continue
+    }
+    if (nextRules.some((rule) => rule.id === entry.id)) {
+      result.duplicateRules += 1
+      continue
+    }
+    nextRules.push(entry)
+    result.importedRules += 1
+  }
+
+  if (
+    result.importedFavorites > 0 &&
+    !writeArray(FAVORITES_KEY, nextFavorites)
+  ) {
+    result.saved = false
+  }
+  if (result.importedRules > 0 && !writeArray(CUSTOM_RULES_KEY, nextRules)) {
+    result.saved = false
+  }
+  return result
+}

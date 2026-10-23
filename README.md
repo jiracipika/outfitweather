@@ -43,7 +43,7 @@ pnpm run test:outfits
 pnpm run build
 ```
 
-CI runs type checking, the recommendation tests, and a production build on pull requests. Browser-local data does not sync across devices and is removed if site storage is cleared.
+CI runs type checking, the recommendation tests, and a production build on pull requests. Browser-local data does not sync across devices and is removed if site storage is cleared — the favorites page has backup controls that export everything (saved looks and custom rules) as a JSON file and restore it on another device.
 
 ## Deployment
 

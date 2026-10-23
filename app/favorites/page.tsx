@@ -1,6 +1,7 @@
 "use client";
 
 import FavoriteOutfits from "@/components/favorite-outfits";
+import BackupCard from "@/components/backup-card";
 import Link from "next/link";
 
 export default function FavoritesPage() {
@@ -22,6 +23,7 @@ export default function FavoritesPage() {
         </Link>
       </div>
       <FavoriteOutfits />
+      <BackupCard />
     </div>
   );
 }

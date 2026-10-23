@@ -7,6 +7,7 @@ import {
   removeOutfitFromLocalStorage,
 } from "@/lib/local-storage-utils";
 import OutfitCard from "./outfit-card";
+import { OUTFIT_DATA_CHANGED_EVENT } from "./backup-card";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 
@@ -16,6 +17,9 @@ export default function FavoriteOutfits() {
 
   useEffect(() => {
     setFavorites(getSavedOutfits());
+    const refresh = () => setFavorites(getSavedOutfits());
+    window.addEventListener(OUTFIT_DATA_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(OUTFIT_DATA_CHANGED_EVENT, refresh);
   }, []);
 
   const handleRemoveOutfit = (id: string) => {
