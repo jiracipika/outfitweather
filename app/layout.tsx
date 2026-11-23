@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
-import "./diary.css";
+import "./planner.css";
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,9 +15,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display" });
 
 export const metadata: Metadata = {
-  title: "Outfit Weather — A little forecast, a little outfit joy",
+  title: "Outfit Weather — Plan what to wear",
   description:
-    "A cheerful daily outfit diary. Find your forecast, build a weather-ready look, and save your favourites.",
+    "Check your local forecast, plan what to wear by the hour, and save your favourite outfits.",
 };
 
 export default function RootLayout({
@@ -53,14 +53,9 @@ export default function RootLayout({
                 <main id="main-content" className="flex flex-1 flex-col">
                   <AppTransitionShell>{children}</AppTransitionShell>
                 </main>
-                <footer className="diary-footer">
-                  <span>
-                    outfitweather <i>♡</i>
-                  </span>
-                  <p>
-                    A little weather. A little style. A day that feels like you.
-                  </p>
-                  <small>MADE FOR YOUR EVERYDAY</small>
+                <footer className="app-footer">
+                  <span>Outfit Weather</span>
+                  <p>Forecast data from <a href="https://www.weatherapi.com/">WeatherAPI</a></p>
                 </footer>
               </div>
               <Toaster />

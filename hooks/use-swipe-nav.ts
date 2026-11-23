@@ -64,6 +64,7 @@ export function useSwipeNav({ routes, enabled = true }: SwipeNavOptions) {
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
       const target = e.target as HTMLElement;
+      if (target.closest("[data-swipe-ignore]")) return;
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable || target.tagName === "SELECT") return;
       touchStartX.current = e.touches[0]!.clientX;
       touchStartY.current = e.touches[0]!.clientY;
@@ -107,11 +108,20 @@ export function useSwipeNav({ routes, enabled = true }: SwipeNavOptions) {
 
     document.addEventListener("touchstart", handleTouchStart, { passive: true });
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    const resetTouch = () => {
+      touchStartX.current = null;
+      touchStartY.current = null;
+      handleTouchEnd();
+      setDragOffset(0);
+      setDragOpacity(1);
+    };
     document.addEventListener("touchend", handleTouchEnd, { passive: true });
+    document.addEventListener("touchcancel", resetTouch, { passive: true });
     return () => {
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
+      document.removeEventListener("touchcancel", resetTouch);
     };
   }, [canSwipe, currentIndex, routes.length, goNext, goPrev]);
 

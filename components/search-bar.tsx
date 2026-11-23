@@ -15,7 +15,7 @@ export default function SearchBar({
     if (city.trim()) onSearch(city.trim());
   };
   return (
-    <form onSubmit={handleSubmit} role="search" className="diary-search">
+    <form onSubmit={handleSubmit} role="search" className="city-search">
       <Search size={18} aria-hidden="true" />
       <label className="sr-only" htmlFor="city-search">
         City name
@@ -24,7 +24,7 @@ export default function SearchBar({
         id="city-search"
         type="search"
         autoComplete="address-level2"
-        placeholder="Where are you headed?"
+        placeholder="Search for a city"
         value={city}
         onChange={(event) => setCity(event.target.value)}
         disabled={isLoading}

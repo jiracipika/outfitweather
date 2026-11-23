@@ -4,6 +4,7 @@ export interface WeatherData {
     region: string
     country: string
     localtime?: string
+    localtime_epoch?: number
   }
   current: {
     temp_c: number
@@ -29,15 +30,24 @@ export interface WeatherData {
         daily_chance_of_snow?: number
         condition: { text: string; icon: string; code: number }
       }
-      hour: Array<{
-        time: string
-        temp_c: number
-        chance_of_rain?: number
-        chance_of_snow?: number
-        condition: { text: string; icon: string; code: number }
-      }>
+      hour: ForecastHour[]
     }>
   }
+}
+
+export interface ForecastHour {
+  time: string
+  time_epoch?: number
+  temp_c: number
+  feelslike_c?: number
+  wind_kph?: number
+  humidity?: number
+  is_day?: number
+  precip_mm?: number
+  uv?: number
+  chance_of_rain?: number
+  chance_of_snow?: number
+  condition: WeatherData["current"]["condition"]
 }
 
 export interface OutfitRecommendation {

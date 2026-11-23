@@ -46,21 +46,16 @@ export default function CustomizeLogic() {
     }
     setFeedback(
       saveCustomOutfitRules(rules)
-        ? "Your wardrobe notes are saved. Your next forecast will use them. ♡"
+        ? "Wardrobe notes saved."
         : "We couldn’t save your notes. Check your browser storage and try again.",
     );
   };
   return (
     <form className="rules-editor" onSubmit={save}>
-      <h2>Notes to dress by.</h2>
-      <p className="rules-intro">
-        Little reminders for the weather you know best.
-      </p>
+      <h2>Weather notes</h2>
       {!rules.length && (
         <div className="rules-empty">
-          Nothing here just yet.
-          <br />
-          Add your first note and make the forecast feel more like you.
+          No notes yet. Add one for a piece you reach for in certain weather.
         </div>
       )}
       {rules.map((rule, index) => (
@@ -97,7 +92,7 @@ export default function CustomizeLogic() {
               />
             </label>
             <label>
-              A little emoji
+              Emoji (optional)
               <input
                 value={rule.emoji}
                 maxLength={16}
@@ -188,6 +183,7 @@ export default function CustomizeLogic() {
       <div className="rules-actions">
         <button
           type="button"
+          className="button-secondary"
           onClick={() => {
             setRules((current) => [
               ...current,
@@ -199,9 +195,9 @@ export default function CustomizeLogic() {
           <Plus size={16} />
           Add a note
         </button>
-        <button type="submit">
+        <button type="submit" className="button-primary">
           <Save size={15} />
-          Save my notes
+          Save notes
         </button>
       </div>
       <p role="status" className="rules-feedback">

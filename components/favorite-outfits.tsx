@@ -37,10 +37,10 @@ export default function FavoriteOutfits() {
     return (
       <div className="atelier-favorites-empty">
         <Heart size={40} strokeWidth={1} />
-        <h2 className="ow-display">Your next favourite is out there.</h2>
-        <p>Save a look from your forecast and find it here.</p>
-        <Link href="/" className="ow-return">
-          Find my outfit ↗
+        <h2 className="ow-display">No saved outfits yet.</h2>
+        <p>Save an outfit from the planner to find it here.</p>
+        <Link href="/" className="button-primary">
+          Plan an outfit
         </Link>
       </div>
     );

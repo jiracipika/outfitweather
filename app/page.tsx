@@ -1,88 +1,28 @@
 "use client";
 
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  ArrowRight,
-  Cloud,
-  CloudLightning,
-  CloudRain,
-  Droplets,
-  Haze,
-  LocateFixed,
-  MapPin,
-  Moon,
-  RefreshCw,
-  Snowflake,
-  Sun,
-  Thermometer,
-  Wind,
-} from "lucide-react";
+import { ArrowRight, Droplets, LocateFixed, MapPin, RefreshCw, Thermometer, Wind, X } from "lucide-react";
 import SearchBar from "@/components/search-bar";
 import OutfitStudio from "@/components/outfit-studio";
-import WeatherMascot from "@/components/weather-mascot";
 import ForecastStrip from "@/components/forecast-strip";
+import { ForecastIcon, SAMPLE_LABELS, WEATHER_ICONS } from "@/components/forecast-icons";
 import { useWardrobePreferences } from "@/components/wardrobe-preferences";
+import { asHourlyWeather, formatHour, formatTemperature, type TemperatureUnit } from "@/lib/forecast";
 import { getOutfitRecommendation } from "@/lib/weather-utils";
 import { getCustomOutfitRules } from "@/lib/local-storage-utils";
-import {
-  DEMO_SCENE_KEYS,
-  buildDemoWeather,
-  getWeatherScene,
-  type SceneKey,
-} from "@/lib/weather-scene";
-import type { WeatherData, CustomOutfitRule } from "@/lib/types";
+import { DEMO_SCENE_KEYS, buildDemoWeather, getWeatherScene, type SceneKey } from "@/lib/weather-scene";
+import type { WeatherData, CustomOutfitRule, ForecastHour } from "@/lib/types";
 
-const SKY_ICONS = {
-  "clear-day": Sun,
-  "clear-night": Moon,
-  cloudy: Cloud,
-  rain: CloudRain,
-  thunder: CloudLightning,
-  snow: Snowflake,
-  fog: Haze,
-  wind: Wind,
-  heat: Thermometer,
-};
-const SKY_NAMES = {
-  "clear-day": "Sunny",
-  "clear-night": "Moonlit",
-  cloudy: "Cloudy",
-  rain: "Rainy",
-  thunder: "Stormy",
-  snow: "Snowy",
-  fog: "Misty",
-  wind: "Breezy",
-  heat: "Toasty",
-};
-const SKY_NOTES: Record<SceneKey, string> = {
-  "clear-day": "A little sunshine looks good on you.",
-  "clear-night": "Moonlight calls for one more layer.",
-  cloudy: "Cloudy skies, cosy possibilities.",
-  rain: "A rainy day can still be a good outfit day.",
-  thunder: "Stay cosy inside until the storm passes.",
-  snow: "Bundle up. It’s a hot-chocolate kind of day.",
-  fog: "Soft skies. Something warm. Off you go.",
-  wind: "Hold onto your hat (and your favourite layers).",
-  heat: "Light fabrics, a shady spot, and plenty of water.",
-};
+type RecentPlace = { name: string; query: string };
+
+function placeName({ name, region, country }: WeatherData["location"]) {
+  return [...new Set([name, region, country].filter(Boolean))].join(", ");
+}
 
 export default function HomePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="page-loading" role="status">
-          Putting your day together…
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="page-frame page-loading" role="status">Loading the forecast…</div>}>
       <DailyOutfit />
     </Suspense>
   );
@@ -95,49 +35,31 @@ function DailyOutfit() {
     demo && DEMO_SCENE_KEYS.includes(demo) ? demo : "clear-day",
   );
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [query, setQuery] = useState<string | null>(null);
-  const [lastCity, setLastCity] = useState<string | null>(null);
+  const [lastRequest, setLastRequest] = useState<{ city: string; fromLocation: boolean } | null>(null);
+  const [recent, setRecent] = useState<RecentPlace | null>(null);
+  const [selectedHour, setSelectedHour] = useState<ForecastHour | null>(null);
   const [rules, setRules] = useState<CustomOutfitRule[]>([]);
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [unit, setUnit] = useState<"C" | "F">("C");
+  const [unit, setUnit] = useState<TemperatureUnit>("C");
   const { forHer, toggleForHer } = useWardrobePreferences();
   const request = useRef<AbortController | null>(null);
   const locationRequest = useRef(0);
-  const current = useMemo(
-    () => (preview ? buildDemoWeather(preview) : weather),
-    [preview, weather],
+  const current = useMemo(() => (preview ? buildDemoWeather(preview) : weather), [preview, weather]);
+  const outfitWeather = useMemo(
+    () => current && selectedHour ? asHourlyWeather(current, selectedHour) : current,
+    [current, selectedHour],
   );
   const recommendation = useMemo(
-    () => (current ? getOutfitRecommendation(current, rules) : null),
-    [current, rules],
+    () => outfitWeather ? getOutfitRecommendation(outfitWeather, rules) : null,
+    [outfitWeather, rules],
   );
-  const scene = getWeatherScene(current);
   const busy = loading || locating;
-  useEffect(() => {
-    setRules(getCustomOutfitRules());
-    try {
-      setLastCity(localStorage.getItem("ow:last-city"));
-      setUnit(localStorage.getItem("ow:temperature-unit") === "F" ? "F" : "C");
-    } catch {
-      /* Storage is optional. */
-    }
-    return () => {
-      request.current?.abort();
-      locationRequest.current++;
-    };
-  }, []);
-  const changeUnit = (next: "C" | "F") => {
-    setUnit(next);
-    try {
-      localStorage.setItem("ow:temperature-unit", next);
-    } catch {
-      /* Session only. */
-    }
-  };
-  const fetchWeather = useCallback(async (city: string) => {
+
+  const fetchWeather = useCallback(async (city: string, fromLocation = false) => {
     locationRequest.current++;
+    const coordinates = /^-?\d+(?:\.\d+)?,\s*-?\d+(?:\.\d+)?$/.test(city);
     setLocating(false);
     request.current?.abort();
     const controller = new AbortController();
@@ -145,39 +67,62 @@ function DailyOutfit() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `/api/weather?city=${encodeURIComponent(city)}`,
-        { signal: controller.signal },
-      );
+      const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}`, { signal: controller.signal });
       const result = await response.json();
-      if (!response.ok)
-        throw new Error(
-          result.error || "The forecast couldn’t load. Please try again.",
-        );
+      if (!response.ok) throw new Error(result.error || "Couldn’t load the forecast. Try again.");
       if (controller.signal.aborted) return;
       setWeather(result);
       setPreview(null);
-      setQuery(city);
-      setLastCity(result.location.name);
+      setSelectedHour(null);
+      setLastRequest({ city, fromLocation });
+      const nextRecent = { name: placeName(result.location), query: fromLocation || coordinates ? result.location.name : city };
+      setRecent(nextRecent);
       try {
         localStorage.setItem("ow:last-city", result.location.name);
+        localStorage.setItem("ow:last-place", JSON.stringify(nextRecent));
       } catch {
-        /* Session only. */
+        // Keep the recent location for this session.
       }
     } catch (cause) {
-      if (!controller.signal.aborted)
-        setError(
-          cause instanceof Error
-            ? cause.message
-            : "The forecast couldn’t load. Please try again.",
-        );
+      if (!controller.signal.aborted) {
+        setError(cause instanceof Error ? cause.message : "Couldn’t load the forecast. Try again.");
+      }
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    setRules(getCustomOutfitRules());
+    try {
+      const lastCity = localStorage.getItem("ow:last-city");
+      const saved = JSON.parse(localStorage.getItem("ow:last-place") ?? "null");
+      const lastPlace = typeof saved?.query === "string" && typeof saved?.name === "string"
+        ? { name: saved.name, query: saved.query }
+        : lastCity ? { name: lastCity, query: lastCity } : null;
+      setRecent(lastPlace);
+      setUnit(localStorage.getItem("ow:temperature-unit") === "F" ? "F" : "C");
+      if (demo && DEMO_SCENE_KEYS.includes(demo)) {
+        setPreview(demo);
+        setSelectedHour(null);
+        setLoading(false);
+        setLocating(false);
+        setError(null);
+      } else if (lastPlace) {
+        void fetchWeather(lastPlace.query);
+      }
+    } catch {
+      // Storage is optional. Sample forecasts remain available.
+    }
+    return () => {
+      request.current?.abort();
+      locationRequest.current++;
+    };
+  }, [demo, fetchWeather]);
+
   const useLocation = () => {
     if (!navigator.geolocation) {
-      setError("Location isn’t supported here. Try searching for your city.");
+      setError("Location isn’t supported here. Search for your city instead.");
       return;
     }
     const id = ++locationRequest.current;
@@ -185,278 +130,144 @@ function DailyOutfit() {
     setError(null);
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        if (id === locationRequest.current)
-          void fetchWeather(`${coords.latitude},${coords.longitude}`);
+        if (id === locationRequest.current) void fetchWeather(`${coords.latitude},${coords.longitude}`, true);
       },
       () => {
         if (id === locationRequest.current) {
           setLocating(false);
-          setError(
-            "We couldn’t find your location. Search for your city above.",
-          );
+          setError("Couldn’t find your location. Search for your city instead.");
         }
       },
       { timeout: 10000, maximumAge: 300000 },
     );
   };
+
   const chooseSky = (key: SceneKey) => {
     request.current?.abort();
     locationRequest.current++;
     setLoading(false);
     setLocating(false);
     setError(null);
+    setSelectedHour(null);
     setPreview(key);
   };
-  const temperature = (value: number) =>
-    Math.round(unit === "C" ? value : (value * 9) / 5 + 32);
+
+  const changeUnit = (next: TemperatureUnit) => {
+    setUnit(next);
+    try {
+      localStorage.setItem("ow:temperature-unit", next);
+    } catch {
+      // Keep the unit for this session.
+    }
+  };
+  const temp = (value: number) => formatTemperature(value, unit);
+  const scene = getWeatherScene(current);
+  const today = current?.forecast?.forecastday[0]?.day;
+  const timeLabel = selectedHour
+    ? `${selectedHour.time.slice(0, 10) !== current?.location.localtime?.slice(0, 10) && current?.location.localtime ? "Tomorrow, " : ""}${formatHour(selectedHour.time)}`
+    : "Now";
+
   return (
-    <div className="diary-page">
-      <section className="diary-intro" aria-labelledby="daily-title">
+    <div className="page-frame planner-page">
+      <header className="planner-header">
         <div>
-          <span className="eyebrow">
-            <span className="tiny-flower">✳︎</span> A LITTLE FORECAST. A LITTLE
-            OUTFIT JOY.
-          </span>
-          <h1 id="daily-title">
-            Good day. <em>Great outfit.</em>
-          </h1>
-          <p>Whatever the sky has planned, let’s get you dressed for it.</p>
+          <h1>Dress for the <em>day.</em></h1>
+          <p>Weather and outfit ideas for wherever you’re headed.</p>
         </div>
-        <div className="find-weather">
-          <SearchBar onSearch={fetchWeather} isLoading={busy} />
-          <div className="search-options">
-            <button type="button" onClick={useLocation} disabled={busy}>
-              <LocateFixed size={14} />
-              {locating ? "Finding you…" : "Use my location"}
+        <div className="location-controls">
+          <div className="location-actions">
+            <SearchBar onSearch={fetchWeather} isLoading={busy} />
+            <button type="button" className="locate-button" onClick={useLocation} disabled={busy} aria-label="Use my location" title="Use my location">
+              <LocateFixed size={20} />
             </button>
-            {lastCity && (
-              <button
-                type="button"
-                onClick={() => void fetchWeather(lastCity)}
-                disabled={busy}
-              >
-                <MapPin size={13} />
-                {lastCity}
-                <ArrowRight size={12} />
+          </div>
+          <div className="location-secondary">
+            {locating && <span role="status">Finding your location…</span>}
+            {!locating && preview && recent && (
+              <button type="button" onClick={() => void fetchWeather(recent.query)} disabled={busy}>
+                <MapPin size={14} /> {recent.name}
               </button>
             )}
           </div>
         </div>
-      </section>
+      </header>
       {error && (
-        <div role="alert" className="diary-error">
-          <CloudRain size={18} />
+        <div role="alert" className="planner-error">
           <span>{error}</span>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            aria-label="Dismiss error"
-          >
-            ×
-          </button>
+          <button type="button" onClick={() => setError(null)} aria-label="Dismiss forecast error"><X size={18} /></button>
         </div>
       )}
-      <div className="daily-grid">
-        <aside className="weather-column" aria-label="Your weather">
-          <section
-            className="weather-postcard"
-            data-sky={scene.key}
-            aria-busy={busy}
-          >
-            <header>
-              <span className="eyebrow">
-                {preview ? "A LITTLE PREVIEW" : "YOUR LOCAL FORECAST"}
-              </span>
-              <span
-                className="unit-picker"
-                role="group"
-                aria-label="Temperature unit"
-              >
-                {(["C", "F"] as const).map((value) => (
-                  <button
-                    type="button"
-                    key={value}
-                    aria-pressed={unit === value}
-                    onClick={() => changeUnit(value)}
-                  >
-                    °{value}
-                  </button>
-                ))}
-              </span>
-            </header>
-            <div className="weather-place">
-              <MapPin size={15} />
-              {preview ? "A little daydream" : current?.location.name}
-              {!preview && query && (
-                <button
-                  type="button"
-                  onClick={() => void fetchWeather(query)}
-                  disabled={busy}
-                  aria-label="Refresh weather"
-                >
-                  <RefreshCw
-                    size={14}
-                    className={loading ? "animate-spin" : ""}
-                  />
-                </button>
-              )}
-            </div>
-            <WeatherMascot scene={scene.key} />
-            <div className="weather-temperature">
-              {current ? temperature(current.current.temp_c) : "—"}
-              <span>°{unit}</span>
-            </div>
-            <h2>{current?.current.condition.text}</h2>
-            <p className="weather-thought">{SKY_NOTES[scene.key]}</p>
-            <div className="weather-metrics">
-              <div>
-                <Thermometer size={17} />
-                <span>Feels like</span>
-                <strong>
-                  {current
-                    ? temperature(
-                        current.current.feelslike_c ?? current.current.temp_c,
-                      )
-                    : "—"}
-                  °
-                </strong>
+      {current && outfitWeather && recommendation && (
+        <div className="planner-grid">
+          <div className="weather-column">
+            <section className="weather-hero" data-sky={scene.key} aria-label="Current weather" aria-busy={busy}>
+              <div className="weather-hero-top">
+                <span className="weather-source"><span />{preview ? "Sample weather" : "Live weather"}</span>
+                <div className="segmented weather-unit" role="group" aria-label="Temperature unit">
+                  {(["C", "F"] as const).map((value) => (
+                    <button type="button" key={value} aria-pressed={unit === value} onClick={() => changeUnit(value)}>°{value}</button>
+                  ))}
+                </div>
               </div>
-              <div>
-                <Wind size={17} />
-                <span>Wind</span>
-                <strong>
-                  {current?.current.wind_kph}
-                  <small> km/h</small>
-                </strong>
+              <div className="weather-hero-body">
+                <div className="weather-place">
+                  <MapPin size={16} aria-hidden="true" />
+                  <span>{preview ? "Forecast preview" : placeName(current.location)}</span>
+                  {!preview && lastRequest && (
+                    <button type="button" onClick={() => void fetchWeather(lastRequest.city, lastRequest.fromLocation)} disabled={busy} aria-label="Refresh weather">
+                      <RefreshCw size={15} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+                <div className="weather-temperature">{temp(current.current.temp_c)}<span>°</span></div>
+                <div className="weather-condition">
+                  <ForecastIcon weather={current} size={22} />
+                  <span>{current.current.condition.text}</span>
+                </div>
+                {today && <p className="weather-range">High {temp(today.maxtemp_c)}° · Low {temp(today.mintemp_c)}°</p>}
               </div>
-              <div>
-                <Droplets size={17} />
-                <span>Humidity</span>
-                <strong>
-                  {current?.current.humidity}
-                  <small>%</small>
-                </strong>
-              </div>
-            </div>
-            <span className="postcard-stamp">
-              {preview
-                ? "SAMPLE WEATHER · JUST FOR INSPIRATION"
-                : "LIVE WEATHER · WEATHERAPI"}
-            </span>
-          </section>
-          <section className="wardrobe-note">
-            <span className="note-pin" aria-hidden="true">
-              ✳︎
-            </span>
-            <span className="eyebrow">A NOTE BEFORE YOU GO</span>
-            <h3>Comfort is always in style.</h3>
-            <p>{recommendation?.description}</p>
-            <span className="note-signoff">
-              a little reminder, just for you ♡
-            </span>
-          </section>
-        </aside>
-        <section className="outfit-column" aria-labelledby="outfit-title">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">01 / THE DAILY DRESS-UP</span>
-              <h2 id="outfit-title">
-                Your forecast, <em>styled.</em>
-              </h2>
-            </div>
-            <div
-              className="wardrobe-switch"
-              role="group"
-              aria-label="Wardrobe collection"
-            >
-              <button
-                type="button"
-                aria-pressed={!forHer}
-                onClick={() => {
-                  if (forHer) toggleForHer();
-                }}
-              >
-                Everyday
-              </button>
-              <button
-                type="button"
-                aria-pressed={forHer}
-                onClick={() => {
-                  if (!forHer) toggleForHer();
-                }}
-              >
-                For her ♡
-              </button>
-            </div>
+              <dl className="weather-metrics">
+                <div><dt><Thermometer size={16} /> Feels like</dt><dd>{temp(current.current.feelslike_c ?? current.current.temp_c)}°</dd></div>
+                <div><dt><Wind size={16} /> Wind</dt><dd>{Math.round(current.current.wind_kph)} <small>km/h</small></dd></div>
+                <div><dt><Droplets size={16} /> Humidity</dt><dd>{current.current.humidity}%</dd></div>
+              </dl>
+            </section>
+            <ForecastStrip weather={current} unit={unit} selectedHour={selectedHour} onSelect={setSelectedHour} />
           </div>
-          {current && recommendation && (
-            <OutfitStudio
-              key={`${preview ?? "live"}-${current.location.name}`}
-              weather={current}
-              base={recommendation}
-              forHer={forHer}
-              demo={Boolean(preview)}
-              unit={unit}
-              onUnitChange={changeUnit}
-              isRefreshing={busy}
-            />
-          )}
-        </section>
-      </div>
-      {current && <ForecastStrip weather={current} unit={unit} />}
-      <section className="sky-section" aria-labelledby="sky-title">
+          <OutfitStudio
+            weather={outfitWeather}
+            base={recommendation}
+            forHer={forHer}
+            onToggleCollection={toggleForHer}
+            timeLabel={timeLabel}
+            unit={unit}
+            isRefreshing={busy}
+          />
+        </div>
+      )}
+      <section className="sample-section" aria-labelledby="samples-title">
         <header>
           <div>
-            <span className="eyebrow">02 / DRESS FOR A DIFFERENT DAY</span>
-            <h2 id="sky-title">
-              A sky for <em>every mood.</em>
-            </h2>
+            <h2 id="samples-title">Try a different forecast</h2>
+            <p>See how your outfit changes in different weather.</p>
           </div>
           {preview && weather && (
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => setPreview(null)}
-            >
-              Back to my forecast <ArrowRight size={15} />
+            <button type="button" className="text-button" onClick={() => { setPreview(null); setSelectedHour(null); }}>
+              Back to live forecast <ArrowRight size={16} />
             </button>
           )}
         </header>
-        <div className="sky-choices">
+        <div className="sample-choices" role="group" aria-label="Sample weather conditions">
           {DEMO_SCENE_KEYS.map((key) => {
-            const Icon = SKY_ICONS[key];
+            const Icon = WEATHER_ICONS[key];
             return (
-              <button
-                type="button"
-                key={key}
-                data-sky={key}
-                aria-pressed={preview === key}
-                onClick={() => chooseSky(key)}
-              >
-                <Icon size={25} strokeWidth={1.5} />
-                <span>{SKY_NAMES[key]}</span>
-                <small>
-                  {temperature(buildDemoWeather(key).current.temp_c)}°
-                </small>
+              <button type="button" key={key} aria-pressed={preview === key} onClick={() => chooseSky(key)}>
+                <Icon size={18} strokeWidth={1.7} aria-hidden="true" /> {SAMPLE_LABELS[key]}
               </button>
             );
           })}
         </div>
-        <p>Play with sample weather, or search your city for the real thing.</p>
       </section>
-      <div className="how-it-works">
-        <span>
-          <b>01</b> Find your sky
-        </span>
-        <i>✳︎</i>
-        <span>
-          <b>02</b> Make it your own
-        </span>
-        <i>✳︎</i>
-        <span>
-          <b>03</b> Save a little inspiration
-        </span>
-      </div>
     </div>
   );
 }

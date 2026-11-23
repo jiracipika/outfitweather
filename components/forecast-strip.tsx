@@ -1,52 +1,97 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CloudRain, CalendarDays, Clock3 } from "lucide-react"
-import type { WeatherData } from "@/lib/types"
-import { StaggerGroup, StaggerItem } from "./motion-primitives"
+import { useState } from "react";
+import { ArrowDown, CloudRain, Snowflake } from "lucide-react";
+import type { ForecastHour, WeatherData } from "@/lib/types";
+import { asHourlyWeather, forecastHourKey, formatHour, formatTemperature, type TemperatureUnit } from "@/lib/forecast";
+import { getUpcomingHours } from "@/lib/outfit-styling";
+import { ForecastIcon } from "./forecast-icons";
 
-type ForecastDay = NonNullable<WeatherData["forecast"]>["forecastday"][number]
+const weekday = new Intl.DateTimeFormat("en-CA", { weekday: "short", timeZone: "UTC" });
 
-export default function ForecastStrip({ weather, unit }: { weather: WeatherData; unit: "C" | "F" }) {
-  const [tab, setTab] = useState<"hours" | "days">("hours")
-  const days = weather.forecast?.forecastday ?? []
-  if (!days.length) return null
-
-  const localHour = weather.location.localtime ? new Date(weather.location.localtime.replace(" ", "T")).getHours() : 0
-  const hours = days.flatMap((day) => day.hour).filter((hour) => {
-    const day = hour.time.slice(0, 10)
-    return day > days[0].date || Number(hour.time.slice(11, 13)) >= localHour
-  }).slice(0, 12)
-  const showTemp = (c: number) => `${Math.round(unit === "C" ? c : c * 9 / 5 + 32)}°`
+export default function ForecastStrip({
+  weather,
+  unit,
+  selectedHour,
+  onSelect,
+}: {
+  weather: WeatherData;
+  unit: TemperatureUnit;
+  selectedHour: ForecastHour | null;
+  onSelect: (hour: ForecastHour | null) => void;
+}) {
+  const [view, setView] = useState<"hours" | "days">("hours");
+  const days = weather.forecast?.forecastday ?? [];
+  if (!days.length) return null;
+  const hours = getUpcomingHours(weather, false).slice(0, 12);
+  const showTemp = (value: number) => `${formatTemperature(value, unit)}°`;
+  const selectHour = (hour: ForecastHour | null) => {
+    onSelect(hour);
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      const heading = document.getElementById("outfit-title");
+      heading?.focus({ preventScroll: true });
+      heading?.scrollIntoView({ block: "start" });
+    }
+  };
 
   return (
-    <section className="ow-forecast" aria-label="Upcoming weather">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div><div className="ow-eyebrow">PLAN AHEAD</div><h2 className="ow-display mt-2 text-2xl sm:text-3xl">What’s coming next</h2></div>
-        <div className="ow-forecast-tabs" role="tablist" aria-label="Forecast view">
-          <button type="button" role="tab" aria-selected={tab === "hours"} onClick={() => setTab("hours")} className={tab === "hours" ? "active" : ""}><Clock3 size={15} /> Next hours</button>
-          <button type="button" role="tab" aria-selected={tab === "days"} onClick={() => setTab("days")} className={tab === "days" ? "active" : ""}><CalendarDays size={15} /> 3 days</button>
+    <section className="forecast-card" aria-labelledby="forecast-title">
+      <header className="forecast-header">
+        <h2 id="forecast-title">Forecast</h2>
+        <div className="segmented" role="group" aria-label="Forecast view">
+          <button type="button" aria-pressed={view === "hours"} onClick={() => setView("hours")}>Hourly</button>
+          <button type="button" aria-pressed={view === "days"} onClick={() => setView("days")}>{days.length} {days.length === 1 ? "day" : "days"}</button>
         </div>
-      </div>
-      {tab === "hours" ? (
-        <StaggerGroup role="tabpanel" className="ow-hours mt-5 flex gap-2 overflow-x-auto pb-2" stagger={0.05}>
-          {hours.map((hour, i) => <StaggerItem as="div" className="ow-hour" key={hour.time} rise={6}>
-            <span className="text-xs text-white/70">{i === 0 ? "Now" : new Date(hour.time.replace(" ", "T")).toLocaleTimeString("en", { hour: "numeric" })}</span>
-            <img src={`https:${hour.condition.icon}`} width={42} height={42} alt={hour.condition.text} title={hour.condition.text} />
-            <strong>{showTemp(hour.temp_c)}</strong>
-            <span className="flex items-center gap-1 text-xs text-sky-200"><CloudRain size={12} />{Math.max(hour.chance_of_rain ?? 0, hour.chance_of_snow ?? 0)}%</span>
-          </StaggerItem>)}
-        </StaggerGroup>
+      </header>
+      {view === "hours" ? (
+        <>
+          <p className="forecast-hint">{hours.length ? "Pick an hour to plan your outfit." : "No more hourly forecasts are available."}</p>
+          <div className="hour-strip" role="group" aria-label="Plan for an hour" data-swipe-ignore>
+            <button type="button" aria-pressed={!selectedHour} onClick={() => selectHour(null)}>
+              <span>Now</span>
+              <ForecastIcon weather={weather} />
+              <strong>{showTemp(weather.current.temp_c)}</strong>
+            </button>
+            {hours.map((hour) => {
+              const key = forecastHourKey(hour);
+              const nextDay = hour.time.slice(0, 10) !== (weather.location.localtime ?? days[0].date).slice(0, 10);
+              const time = formatHour(hour.time);
+              const rain = hour.chance_of_rain ?? 0;
+              const snow = hour.chance_of_snow ?? 0;
+              const chance = Math.max(rain, snow);
+              const PrecipIcon = snow > rain ? Snowflake : CloudRain;
+              return (
+                <button
+                  type="button"
+                  key={key}
+                  aria-label={`${nextDay ? "Tomorrow, " : ""}${time}, ${showTemp(hour.temp_c)}${unit}, ${hour.condition.text}${chance > 0 ? `, ${chance}% chance of ${snow > rain ? "snow" : "rain"}` : ""}`}
+                  aria-pressed={selectedHour !== null && forecastHourKey(selectedHour) === key}
+                  onClick={() => selectHour(hour)}
+                >
+                  <span>{time}{nextDay && <small>Tomorrow</small>}</span>
+                  <ForecastIcon weather={asHourlyWeather(weather, hour)} />
+                  <strong>{showTemp(hour.temp_c)}</strong>
+                  {chance > 0 && <small className="forecast-precip"><PrecipIcon size={11} /> {chance}%</small>}
+                </button>
+              );
+            })}
+          </div>
+          <a className="forecast-mobile-link" href="#outfit-title">View outfit <ArrowDown size={14} /></a>
+        </>
       ) : (
-        <StaggerGroup role="tabpanel" className="mt-5 grid gap-2 sm:grid-cols-3" stagger={0.09}>
-          {days.map((day: ForecastDay, index) => <StaggerItem as="div" className="ow-day" key={day.date}>
-            <span className="ow-eyebrow">{index === 0 ? "TODAY" : new Date(`${day.date}T12:00:00`).toLocaleDateString("en", { weekday: "long" }).toUpperCase()}</span>
-            <div className="mt-3 flex items-center gap-2"><img src={`https:${day.day.condition.icon}`} width={48} height={48} alt="" /><strong className="text-lg">{showTemp(day.day.maxtemp_c)} <span className="text-white/60">/ {showTemp(day.day.mintemp_c)}</span></strong></div>
-            <p className="mt-1 text-sm text-white/80">{day.day.condition.text}</p>
-            <p className="mt-3 flex items-center gap-1 text-xs text-sky-200"><CloudRain size={13} />{Math.max(day.day.daily_chance_of_rain ?? 0, day.day.daily_chance_of_snow ?? 0)}% chance of precipitation</p>
-          </StaggerItem>)}
-        </StaggerGroup>
+        <ul className="forecast-days">
+          {days.map(({ date, day }, index) => (
+            <li key={date}>
+              <strong>{index === 0 ? "Today" : index === 1 ? "Tomorrow" : weekday.format(new Date(date))}</strong>
+              <ForecastIcon weather={{ ...weather, current: { ...weather.current, condition: day.condition, is_day: 1, temp_c: day.maxtemp_c, wind_kph: 0 } }} size={21} />
+              <span title={day.condition.text}>{day.condition.text}</span>
+              <span aria-label={`Low ${showTemp(day.mintemp_c)}${unit}, high ${showTemp(day.maxtemp_c)}${unit}`}>
+                {showTemp(day.mintemp_c)} <b>{showTemp(day.maxtemp_c)}</b>
+              </span>
+            </li>
+          ))}
+        </ul>
       )}
     </section>
-  )
+  );
 }
