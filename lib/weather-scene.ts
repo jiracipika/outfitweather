@@ -1,4 +1,4 @@
-import type { WeatherData } from "./types"
+import type { ForecastHour, WeatherData } from "./types"
 
 export type SceneKey =
   | "clear-day"
@@ -133,10 +133,10 @@ function _textHits(text: string, codes: number[]) {
  */
 export function buildDemoWeather(scene: SceneKey): WeatherData {
   const base: WeatherData = {
-    location: { name: "Demo Sky", region: "Pretendcloud", country: "Imaginaria" },
+    location: { name: "Sample forecast", region: "", country: "", localtime: "2026-06-08 10:00" },
     current: {
       temp_c: 18,
-      condition: { text: "Clear", icon: "//cdn.weatherapi.com/weather/64x64/day/113.png", code: 1000 },
+      condition: { text: "Sunny", icon: "//cdn.weatherapi.com/weather/64x64/day/113.png", code: 1000 },
       humidity: 55,
       wind_kph: 8,
       is_day: 1,
@@ -147,6 +147,7 @@ export function buildDemoWeather(scene: SceneKey): WeatherData {
   switch (scene) {
     case "clear-night":
       base.current.is_day = 0
+      base.location.localtime = "2026-06-08 20:00"
       base.current.temp_c = 11
       base.current.condition.text = "Clear"
       break
@@ -186,6 +187,51 @@ export function buildDemoWeather(scene: SceneKey): WeatherData {
       break
     default:
       break
+  }
+  const current = base.current
+  current.feelslike_c = current.temp_c - (current.wind_kph > 25 ? 5 : 1)
+  const sampleStart = Number(base.location.localtime?.slice(11, 13))
+  base.forecast = {
+    forecastday: Array.from({ length: 3 }, (_, dayIndex) => {
+      const date = `2026-06-${String(8 + dayIndex).padStart(2, "0")}`
+      const hour: ForecastHour[] = Array.from({ length: 24 }, (_, index) => {
+        const day = index >= 6 && index < 20
+        const offset = index + dayIndex * 24 - sampleStart
+        const peak = Math.max(0, 4 - Math.abs(index - 15))
+        const temp = current.temp_c + peak - (day ? 0 : 5) + dayIndex
+        const cloud = scene === "clear-day" && offset >= 5
+        const wet = current.precip_mm > 0 && offset <= 8
+        const snow = wet && scene === "snow"
+        const condition = cloud
+          ? { text: day ? "Partly cloudy" : "Clear", icon: "", code: day ? 1003 : 1000 }
+          : current.precip_mm && !wet
+            ? { text: "Overcast", icon: "", code: 1009 }
+            : current.condition
+        return {
+          time: `${date} ${String(index).padStart(2, "0")}:00`,
+          temp_c: temp,
+          feelslike_c: temp - (current.wind_kph > 25 ? 5 : 1),
+          wind_kph: current.wind_kph,
+          humidity: current.humidity,
+          precip_mm: wet ? current.precip_mm : 0,
+          chance_of_rain: wet && !snow ? 80 : cloud && day ? 15 : 0,
+          chance_of_snow: snow ? 80 : 0,
+          is_day: day ? 1 : 0,
+          condition,
+        }
+      })
+      return {
+        date,
+        hour,
+        day: {
+          maxtemp_c: Math.max(...hour.map((item) => item.temp_c)),
+          mintemp_c: Math.min(...hour.map((item) => item.temp_c)),
+          daily_chance_of_rain: Math.max(...hour.map((item) => item.chance_of_rain ?? 0)),
+          daily_chance_of_snow: Math.max(...hour.map((item) => item.chance_of_snow ?? 0)),
+          condition: hour[sampleStart].condition,
+        },
+      }
+    }),
   }
   return base
 }

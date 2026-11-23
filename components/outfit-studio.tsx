@@ -2,16 +2,18 @@
 
 import { memo, useEffect, useMemo, useState } from "react";
 import {
-  Sparkles,
+  Clock3,
+  Info,
+  Shirt,
   Heart,
   RefreshCw,
-  Shirt,
   Footprints,
   Glasses,
   Briefcase,
   Coffee,
   Moon,
-  ArrowUpRight,
+  Umbrella,
+  Layers,
 } from "lucide-react";
 import type { WeatherData, OutfitRecommendation } from "@/lib/types";
 import {
@@ -23,9 +25,10 @@ import {
   type Palette,
   type OutfitPiece,
 } from "@/lib/outfit-styling";
+import { formatTemperature, type TemperatureUnit } from "@/lib/forecast";
 import { saveOutfitToLocalStorage } from "@/lib/local-storage-utils";
 import WardrobeArt from "./wardrobe-art";
-import { Reveal, TapButton } from "./motion-primitives";
+import { TapButton } from "./motion-primitives";
 
 const occasions = [
   { key: "casual", label: "Everyday", icon: Coffee },
@@ -76,25 +79,24 @@ function OutfitStudio({
   weather,
   base,
   forHer,
-  demo,
+  onToggleCollection,
+  timeLabel,
   unit,
-  onUnitChange,
   isRefreshing,
-  onRefresh,
 }: {
   weather: WeatherData;
   base: OutfitRecommendation;
   forHer: boolean;
-  demo: boolean;
-  unit: "C" | "F";
-  onUnitChange: (unit: "C" | "F") => void;
+  onToggleCollection: () => void;
+  timeLabel: string;
+  unit: TemperatureUnit;
   isRefreshing: boolean;
-  onRefresh?: () => void;
 }) {
   const [preferences, setPreferences] = useState(defaults);
   const { occasion, silhouette, comfort, palette } = preferences;
   const [variation, setVariation] = useState(0);
   const [active, setActive] = useState<OutfitPiece["kind"] | null>(null);
+  const [hovered, setHovered] = useState<OutfitPiece["kind"] | null>(null);
   const [message, setMessage] = useState("");
   useEffect(() => {
     setPreferences(readPreferences(forHer));
@@ -104,6 +106,7 @@ function OutfitStudio({
   useEffect(() => {
     setMessage("");
     setActive(null);
+    setHovered(null);
   }, [forHer, preferences, variation, weather]);
   const look = useMemo(
     () =>
@@ -145,97 +148,43 @@ function OutfitStudio({
     });
     setMessage(
       result === "saved"
-        ? "Tucked away in your Saved looks."
+        ? "Saved to your lookbook."
         : result === "duplicate"
-          ? "This look is already in your Saved looks."
+          ? "This look is already in your lookbook."
           : "Couldn’t save this look. Browser storage may be unavailable.",
     );
   };
   return (
-    <Reveal
-      as="article"
-      className="atelier"
-      aria-label="Build your weather-ready outfit"
-      aria-busy={isRefreshing}
-    >
+    <article className="atelier" aria-labelledby="outfit-title" aria-busy={isRefreshing}>
       <header className="atelier-heading">
-        <span className="eyebrow">
-          {demo ? "SAMPLE LOOK" : "TODAY’S LOOK"} / {weather.location.name}
-        </span>
-        <span className="look-badge">
-          <Sparkles size={12} /> A little you, a little forecast
-        </span>
+        <div>
+          <h2 id="outfit-title" tabIndex={-1}>Your outfit</h2>
+          <p className="outfit-time" aria-live="polite"><Clock3 size={15} /> {timeLabel} · {formatTemperature(weather.current.temp_c, unit)}°{unit} · {weather.current.condition.text}</p>
+        </div>
+        <div className="segmented wardrobe-switch" role="group" aria-label="Wardrobe collection">
+          <button type="button" aria-pressed={!forHer} onClick={() => { if (forHer) onToggleCollection(); }}>Everyday</button>
+          <button type="button" aria-pressed={forHer} onClick={() => { if (!forHer) onToggleCollection(); }}>For her</button>
+        </div>
       </header>
-      <div
-        className="atelier-occasions"
-        role="group"
-        aria-label="Choose an occasion"
-      >
+
+      <div className="atelier-occasions" role="group" aria-label="Occasion">
         {occasions.map(({ key, label, icon: Icon }) => (
-          <TapButton
-            type="button"
-            key={key}
-            aria-pressed={occasion === key}
-            onClick={() => remember({ occasion: key })}
-            className={occasion === key ? "selected" : ""}
-          >
-            <Icon size={15} />
-            {label}
+          <TapButton type="button" key={key} aria-pressed={occasion === key} onClick={() => remember({ occasion: key })}>
+            <Icon size={16} aria-hidden="true" /> {key === "casual" ? "Casual" : label}
           </TapButton>
         ))}
       </div>
-      {forHer && (
-        <div className="atelier-preference">
-          <span>I’d like to wear</span>
-          <div role="group" aria-label="Clothing preference">
-            {(["auto", "trousers", "dress"] as const).map((choice) => (
-              <button
-                type="button"
-                key={choice}
-                aria-pressed={silhouette === choice}
-                onClick={() => remember({ silhouette: choice })}
-                className={silhouette === choice ? "selected" : ""}
-              >
-                {choice === "dress"
-                  ? "A dress"
-                  : choice === "auto"
-                    ? "Surprise me"
-                    : "Trousers"}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      <div
-        className="atelier-board"
-        key={
-          forHer +
-          "-" +
-          occasion +
-          "-" +
-          silhouette +
-          "-" +
-          variation +
-          "-" +
-          comfort
-        }
-      >
-        <div className="atelier-art">
-          <span className="atelier-art-tag">
-            OUTFIT OF THE DAY{" "}
-            <i>NO. {String(variation + 1).padStart(2, "0")}</i>
-          </span>
-          <WardrobeArt look={look} active={active} />
-          <div
-            className="atelier-swatches"
-            role="group"
-            aria-label="Choose a colour palette"
-          >
+
+      <div className="atelier-board">
+        <div className="atelier-art" data-collection={forHer ? "her" : "everyday"}>
+          <WardrobeArt look={look} active={hovered ?? active} />
+          <div className="atelier-swatches" role="group" aria-label="Colour palette">
             {(Object.keys(LOOK_PALETTES) as Palette[]).map((key) => (
               <button
                 type="button"
                 key={key}
                 aria-label={LOOK_PALETTES[key].name}
+                title={LOOK_PALETTES[key].name}
                 aria-pressed={palette === key}
                 onClick={() => remember({ palette: key })}
                 style={{
@@ -244,99 +193,85 @@ function OutfitStudio({
               />
             ))}
           </div>
-          <span className="atelier-art-caption">
-            {LOOK_PALETTES[palette].name} · Pick your palette
-          </span>
+          <span className="atelier-art-caption">{LOOK_PALETTES[palette].name}</span>
         </div>
-        <div className="atelier-pieces" onMouseLeave={() => setActive(null)}>
-          {look.pieces.map((piece, index) => (
-            <button
-              type="button"
-              className={`atelier-piece ${active === piece.kind ? "is-highlighted" : ""}`}
-              key={piece.kind}
-              onMouseEnter={() => setActive(piece.kind)}
-              onFocus={() => setActive(piece.kind)}
-              onBlur={() => setActive(null)}
-              onClick={() =>
-                setActive((value) => (value === piece.kind ? null : piece.kind))
-              }
-              aria-pressed={active === piece.kind}
-              style={{ animationDelay: index * 65 + "ms" }}
-            >
-              <span className="atelier-piece-icon">
-                <PieceIcon piece={piece} />
-              </span>
-              <span>
-                <small>
-                  {piece.kind === "dress"
-                    ? "ONE PIECE"
-                    : piece.kind.toUpperCase()}
-                </small>
-                <strong>{piece.label}</strong>
-              </span>
-              <span className="atelier-piece-number" aria-hidden="true">
-                0{index + 1}
-              </span>
-            </button>
-          ))}
+
+        <div className="atelier-pieces">
+          <h3>{look.title}</h3>
+          <ul>
+            {look.pieces.map((piece) => (
+              <li key={piece.kind}>
+                <button
+                  type="button"
+                  className="atelier-piece"
+                  onMouseEnter={() => setHovered(piece.kind)}
+                  onMouseLeave={() => setHovered(null)}
+                  onClick={() => setActive((value) => value === piece.kind ? null : piece.kind)}
+                  aria-pressed={active === piece.kind}
+                >
+                  <span className="atelier-piece-icon"><PieceIcon piece={piece} /></span>
+                  <span><small>{PIECE_NAMES[piece.kind]}</small><strong>{piece.label}</strong></span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-      <div className="atelier-comfort">
-        <label htmlFor="comfort">Make it feel like you</label>
-        <select
-          id="comfort"
-          value={comfort}
-          onChange={(e) => remember({ comfort: e.target.value as Comfort })}
-        >
-          <option value="cold">I run cold · Extra warmth</option>
-          <option value="forecast">Dress for the forecast</option>
-          <option value="warm">I run warm · Lighter fabrics</option>
-        </select>
-      </div>
-      <div className="atelier-caption">
-        <h3 className="ow-display">{look.title}</h3>
-        <p>{look.note}</p>
-        {comfort !== "forecast" && (
-          <p className="atelier-comfort-note">
-            {comfort === "cold"
-              ? "A little extra warmth, just for you."
-              : "Lighter fabrics, with weather protection kept in."}
-          </p>
+
+      <div className="atelier-preferences">
+        <label>
+          Warmth
+          <select value={comfort} onChange={(event) => remember({ comfort: event.target.value as Comfort })}>
+            <option value="cold">Extra warmth</option>
+            <option value="forecast">Standard</option>
+            <option value="warm">Lighter layers</option>
+          </select>
+        </label>
+        {forHer && (
+          <label>
+            Silhouette
+            <select value={silhouette} onChange={(event) => remember({ silhouette: event.target.value as Silhouette })}>
+              <option value="auto">Any silhouette</option>
+              <option value="trousers">Trousers</option>
+              <option value="dress">Dress</option>
+            </select>
+          </label>
         )}
-        <details className="atelier-advice">
-          <summary>Why these layers?</summary>
-          <p>{base.description}</p>
-        </details>
       </div>
+
+      <details className="atelier-advice">
+        <summary><Info size={17} /> Why this outfit?</summary>
+        <p>{look.note}</p>
+        <p>{base.description}</p>
+      </details>
       <footer className="atelier-actions">
-        <TapButton
-          type="button"
-          className="atelier-shuffle"
-          onClick={() => setVariation((value) => (value + 1) % 6)}
-        >
-          <RefreshCw size={15} />
-          Remix my look
+        <TapButton type="button" className="button-secondary" onClick={() => setVariation((value) => (value + 1) % 6)}>
+          <RefreshCw size={16} /> Remix
         </TapButton>
-        <TapButton type="button" className="atelier-save" onClick={save}>
-          <Heart size={15} />
-          Save look ♡<ArrowUpRight size={14} />
+        <TapButton type="button" className="button-primary" onClick={save}>
+          <Heart size={17} /> Save look
         </TapButton>
       </footer>
-      <p role="status" className="atelier-status">
-        {message}
-      </p>
-    </Reveal>
+      <p role="status" className="atelier-status">{message}</p>
+    </article>
   );
 }
 
+const PIECE_NAMES: Record<OutfitPiece["kind"], string> = {
+  top: "Top",
+  bottom: "Bottoms",
+  dress: "Dress",
+  layer: "Outer layer",
+  shoes: "Footwear",
+  accessory: "Accessories",
+};
+
 function PieceIcon({ piece }: { piece: OutfitPiece }) {
-  return piece.kind === "shoes" ? (
-    <Footprints size={18} />
-  ) : piece.kind === "accessory" ? (
-    <Glasses size={18} />
-  ) : (
-    <Shirt size={18} />
-  );
+  const Icon = piece.kind === "layer" ? Layers
+    : piece.kind === "shoes" ? Footprints
+    : piece.kind === "accessory" ? (piece.label.includes("umbrella") ? Umbrella : Glasses)
+    : Shirt;
+  return <Icon size={17} strokeWidth={1.7} aria-hidden="true" />;
 }
 
 export default memo(OutfitStudio);

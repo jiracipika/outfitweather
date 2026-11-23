@@ -97,18 +97,17 @@ export default function BackupCard() {
 
   return (
     <div className="ow-backup">
-      <span className="ow-eyebrow">BACKUP</span>
+      <h2>Backup and restore</h2>
       <p className="ow-backup-copy">
-        Your archive lives in this browser only. Export it before switching
-        devices or clearing site data.
+        Download your saved looks and wardrobe notes, or restore them from a backup.
       </p>
       <div className="ow-backup-actions">
-        <button type="button" className="ow-return" onClick={handleExport}>
+        <button type="button" className="button-secondary" onClick={handleExport}>
           Download backup ↓
         </button>
         <button
           type="button"
-          className="ow-return"
+          className="button-secondary"
           disabled={busy}
           onClick={() => fileInput.current?.click()}
         >

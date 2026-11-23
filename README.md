@@ -1,15 +1,14 @@
 # Outfit Weather
 
-A cheerful daily outfit diary: find your forecast, build a weather-ready look, and save your favourites. Built with Next.js 15, React 19, TypeScript, Tailwind CSS, and Motion.
+Plan what to wear with a local forecast and an illustrated outfit planner. Built with Next.js 15, React 19, TypeScript, Tailwind CSS, and Motion.
 
-## The daily diary
+## How it works
 
-- **Your forecast:** Search a city or use browser location for live conditions, the next 12 hours, and a three-day outlook from WeatherAPI. Celsius/Fahrenheit and your last city are remembered in this browser.
-- **A little dress-up:** Everyday and For her collections, three occasions, four colour palettes, personal warmth preferences, and an outfit remixer. Illustrated garments follow the actual recommendation, including wet-weather and cold-weather protection.
-- **Saved looks:** Keep illustrated outfits in a personal browser-local collection. Existing favourites and wardrobe preferences remain compatible.
-- **Wardrobe notes:** Add personal clothing advice for temperature ranges, rain, snow, and wind. “Any” is a wildcard; the first matching note supplies the advice. Notes do not replace the illustrated outfit’s weather protection.
-- **Sample skies:** Nine explicitly labelled sample forecasts work without an API key. The home page opens with a sunny sample; search or use location to switch to live weather.
-- **A softer interface:** Cream, blush, and lavender stationery, a local SVG cloud mascot, responsive layouts, keyboard focus states, a skip link, and an animation toggle. System reduced-motion preferences are respected.
+- **Today:** Search by city or use your location. See current conditions, the next 12 hours, and up to three days of forecasts from WeatherAPI. Choose an hour to plan a look for that time. The app restores your last location and temperature unit.
+- **Outfit planner:** Choose Everyday or For her, set the occasion, adjust warmth, and pick a colour palette. For her also offers a silhouette preference. Remix the outfit to see other pieces suited to the conditions.
+- **Lookbook:** Save illustrated outfits and download or restore a JSON backup of your looks and wardrobe notes. Data stays in this browser until you export it.
+- **Wardrobe:** Add personal advice for temperature ranges, rain, snow, and wind. The first matching note appears under “Why this outfit?”
+- **Sample forecasts:** Try nine labelled samples with hourly and daily forecasts. Samples work without an API key and can be opened directly using `?demo=rain` or another sample name.
 
 ## Run locally
 
@@ -43,7 +42,7 @@ pnpm run test:outfits
 pnpm run build
 ```
 
-CI runs type checking, the recommendation tests, and a production build on pull requests. Browser-local data does not sync across devices and is removed if site storage is cleared — the favorites page has backup controls that export everything (saved looks and custom rules) as a JSON file and restore it on another device.
+CI checks types, forecast and outfit logic, backup compatibility, and the production build.
 
 ## Deployment
 

@@ -1,4 +1,4 @@
-import type { WeatherData } from "./types"
+import type { ForecastHour, WeatherData } from "./types"
 
 export type Occasion = "casual" | "work" | "evening"
 export type Silhouette = "auto" | "trousers" | "dress"
@@ -14,6 +14,17 @@ export const LOOK_PALETTES: Record<Palette, { name: string; colors: string[] }> 
 export type OutfitPiece = { kind: "top" | "bottom" | "dress" | "layer" | "shoes" | "accessory"; label: string }
 export type StyledLook = { title: string; pieces: OutfitPiece[]; note: string; palette: string[] }
 
+export function getUpcomingHours(weather: WeatherData, includeCurrent = true): ForecastHour[] {
+  const { localtime, localtime_epoch } = weather.location
+  const local = localtime?.replace(/ (\d):/, " 0$1:")
+  return (weather.forecast?.forecastday.flatMap((day) => day.hour) ?? []).filter((hour) => {
+    if (hour.time_epoch !== undefined && localtime_epoch !== undefined) {
+      return includeCurrent ? hour.time_epoch >= localtime_epoch : hour.time_epoch > localtime_epoch
+    }
+    return !local || (includeCurrent ? hour.time >= local : hour.time > local)
+  })
+}
+
 export function buildStyledLook(weather: WeatherData, forHer: boolean, occasion: Occasion, silhouette: Silhouette, variation = 0, options: { comfort?: Comfort; palette?: Palette } = {}): StyledLook {
   const actualTemp = weather.current.feelslike_c ?? weather.current.temp_c
   const temp = actualTemp + (options.comfort === "cold" ? -3 : options.comfort === "warm" ? 3 : 0)
@@ -21,9 +32,7 @@ export function buildStyledLook(weather: WeatherData, forHer: boolean, occasion:
   const protectionTemp = Math.min(actualTemp, temp)
   const condition = weather.current.condition.text.toLowerCase()
   const snow = /snow|sleet|blizzard|ice/.test(condition)
-  const local = weather.location.localtime
-  const nextHours = (weather.forecast?.forecastday.flatMap(day => day.hour) ?? [])
-    .filter(hour => !local || hour.time >= local).slice(0, 8)
+  const nextHours = getUpcomingHours(weather).slice(0, 8)
   const wet = weather.current.precip_mm > 0 || /rain|drizzle|shower|snow|sleet/.test(condition)
     || nextHours.some(hour => Math.max(hour.chance_of_rain ?? 0, hour.chance_of_snow ?? 0) >= 45)
   const windy = weather.current.wind_kph >= 30
